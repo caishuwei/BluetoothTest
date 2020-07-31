@@ -1,0 +1,60 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    buildToolsVersion rootProject.ext.android.buildToolsVersion
+
+    defaultConfig {
+        applicationId "com.csw.bluetooth"
+        minSdkVersion rootProject.ext.android.minSdkVersion
+        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation rootProject.ext.androidX.appcompat
+    implementation rootProject.ext.androidX.annotations
+    implementation rootProject.ext.androidX.material
+    implementation rootProject.ext.androidX.cardview
+    implementation rootProject.ext.androidX.constraintlayout
+    implementation rootProject.ext.androidX.drawerlayout
+    implementation rootProject.ext.androidX.recyclerview
+    implementation rootProject.ext.androidX.viewpager
+    implementation rootProject.ext.androidX.viewpager2
+    implementation rootProject.ext.androidX.gridlayout
+    implementation rootProject.ext.androidX.multidex
+    implementation rootProject.ext.others.BaseRecyclerViewAdapterHelper
+    implementation rootProject.ext.others.rxjava
+    implementation rootProject.ext.others.rxandroid
+    implementation rootProject.ext.others.rxkotlin
+    implementation rootProject.ext.others.gson
+    implementation rootProject.ext.others.rxpermissions
+    implementation rootProject.ext.others.SmartRefreshLayout
+    implementation project(path: ':quickmvp')
+    kapt rootProject.ext.others.dagger2_android_processor
+    kapt rootProject.ext.others.dagger2_compiler
+    implementation rootProject.ext.others.glide
+    kapt rootProject.ext.others.glide_compiler
+    implementation rootProject.ext.others.retrofit
+    implementation rootProject.ext.others.converter_gson
+    implementation rootProject.ext.others.converter_scalars
+    implementation rootProject.ext.others.logging_interceptor
+    implementation rootProject.ext.others.okhttp_cookie_jar
+    implementation rootProject.ext.others.retrofit2_rxjava2_adapter
+}

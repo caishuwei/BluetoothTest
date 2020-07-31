@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="quick_mvp_colorPrimary">#3F51B5</color>
+    <color name="quick_mvp_colorPrimaryDark">#303F9F</color>
+    <color name="quick_mvp_colorAccent">#FF4081</color>
+
+</resources>

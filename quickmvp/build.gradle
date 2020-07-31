@@ -1,0 +1,55 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    buildToolsVersion rootProject.ext.android.buildToolsVersion
+
+    //资源前缀
+    resourcePrefix "quick_mvp_"
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.android.minSdkVersion
+        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation rootProject.ext.androidX.appcompat
+    implementation rootProject.ext.androidX.annotations
+    implementation rootProject.ext.androidX.recyclerview
+    implementation rootProject.ext.androidX.viewpager
+    implementation rootProject.ext.androidX.constraintlayout
+    implementation rootProject.ext.androidX.gridlayout
+
+    api rootProject.ext.others.dagger2_android
+    api rootProject.ext.others.dagger2_android_support
+    kapt rootProject.ext.others.dagger2_android_processor
+    kapt rootProject.ext.others.dagger2_compiler
+
+    api rootProject.ext.others.rxjava
+    api rootProject.ext.others.rxandroid
+    api rootProject.ext.others.rxkotlin
+
+    api rootProject.ext.others.glide
+    kapt rootProject.ext.others.glide_compiler
+    api rootProject.ext.others.BaseRecyclerViewAdapterHelper
+
+    implementation rootProject.ext.others.gson
+}

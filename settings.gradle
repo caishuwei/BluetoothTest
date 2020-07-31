@@ -1,0 +1,3 @@
+include ':quickmvp'
+include ':app'
+rootProject.name = "BluetoothTest"
