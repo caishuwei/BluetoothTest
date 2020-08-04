@@ -64,7 +64,7 @@ class ScanDevicePresenter @Inject constructor(
                 }
                 //发现新设备
                 BluetoothDevice.ACTION_FOUND -> {
-                    intent.getParcelableExtra<BluetoothDevice>("EXTRA_DEVICE")?.run {
+                    intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)?.run {
                         for (bd in bluetoothDevices) {
                             if (bd.address == address) {
                                 //已存在设备
