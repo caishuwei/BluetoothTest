@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme.DayNight" parent="AppTheme">
+        <!--应用主色调(应用于ActionBar之类的)-->
+        <item name="colorPrimary">@color/color_6200EE</item>
+        <!--应用主色调变化-->
+        <item name="colorPrimaryVariant">@color/color_3700B3</item>
+        <!--应用主色调上的其它颜色（比如文字颜色）-->
+        <item name="colorOnPrimary">@color/color_FFFFFF</item>
+        <!--应用辅助颜色-->
+        <item name="colorSecondary">@color/color_03DAC6</item>
+        <!--应用辅助变化颜色（如选中，焦点，之类的）-->
+        <item name="colorSecondaryVariant">@color/color_018786</item>
+        <!--应用辅助变化颜色上的其它颜色-->
+        <item name="colorOnSecondary">@color/color_000000</item>
+
+        <!--可滚动的内容背景，比如ListView RecyclerView之类的那些-->
+        <item name="android:colorBackground">@color/color_FFFFFF</item>
+        <item name="colorOnBackground">@color/color_000000</item>
+        <!--界面上层控件的颜色(因为材料设计有深度这个属性)，如card 弹出的menu-->
+        <item name="colorSurface">@color/color_FFFFFF</item>
+        <item name="colorOnSurface">@color/color_000000</item>
+        <!--错误状态使用的颜色-->
+        <item name="colorError">@color/color_B00020</item>
+        <item name="colorOnError">@color/color_FFFFFF</item>
+
+        <!--窗口背景色-->
+        <item name="android:windowBackground">@color/color_E5E5E5</item>
+    </style>
+</resources>

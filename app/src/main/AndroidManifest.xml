@@ -1,12 +1,35 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.csw.bluetooth">
+    <!-- 蓝牙管理权限，控制蓝牙开关，可见性，扫描设备等 -->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <!-- 蓝牙使用权限 -->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <!--蓝牙连接涉及到物理设备，可能暴露用户位置信息，所以需要提供位置权限。。。-->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
-        android:allowBackup="true"
+        android:name=".app.MyApplication"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme" />
+        android:theme="@style/AppTheme.DayNight">
+        <activity
+            android:name=".ui.main.MainActivity"
+            android:configChanges="screenSize|layoutDirection|orientation">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.scan.ScanDeviceActivity"
+            android:configChanges="screenSize|layoutDirection|orientation" />
+    </application>
 
 </manifest>

@@ -38,17 +38,17 @@ abstract class BaseActivity : AppCompatActivity(), IUICreator, IBaseView {
         super.onCreate(savedInstanceState)
         dialogHelper = DialogHelper(this).apply {  }
 
-        //设置状态栏
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            window.decorView.systemUiVisibility =
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-            //取消设置透明状态栏,使 ContentView 内容不再覆盖状态栏
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-            //需要设置这个 flag 才能调用 setStatusBarColor 来设置状态栏颜色
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-            //设置状态栏颜色
-            window.statusBarColor = Color.WHITE
-        }
+//        //设置状态栏
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            window.decorView.systemUiVisibility =
+//                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+//            //取消设置透明状态栏,使 ContentView 内容不再覆盖状态栏
+//            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+//            //需要设置这个 flag 才能调用 setStatusBarColor 来设置状态栏颜色
+//            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+//            //设置状态栏颜色
+//            window.statusBarColor = Color.WHITE
+//        }
 
         //在设置布局之前注入
         initInject()

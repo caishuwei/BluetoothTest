@@ -16,12 +16,16 @@ open class BasePresenterImpl<V : IBaseView>(protected val view: V) : IBasePresen
 
     private val presenterCompositeDisposable = CompositeDisposable()
     private var uiCompositeDisposable = CompositeDisposable()
+
     /**
      * UI是否还存活
      */
-    protected var uiIsAlive = false
+    protected var uiIsCreated = false
         private set
-
+    protected var uiIsStarted = false
+        private set
+    protected var uiIsResumed = false
+        private set
 
     /**
      *  添加RxJava任务处理器,任务随切片销毁而停止
@@ -53,25 +57,29 @@ open class BasePresenterImpl<V : IBaseView>(protected val view: V) : IBasePresen
     }
 
     override fun onUICreated() {
-        uiIsAlive = true
+        uiIsCreated = true
         //创建一个新的，FragmentUI重新创建时，这里会重新调用，旧的uiCompositeDisposable已经解除订阅，导致无法添加任务
         uiCompositeDisposable = CompositeDisposable()
     }
 
     override fun onUIStart() {
-    }
-
-    override fun onUIPause() {
+        uiIsStarted = true
     }
 
     override fun onUIResume() {
+        uiIsResumed = true
+    }
+
+    override fun onUIPause() {
+        uiIsResumed = false
     }
 
     override fun onUIStop() {
+        uiIsStarted = false
     }
 
     override fun onUIDestroy() {
-        uiIsAlive = false
+        uiIsCreated = false
         //解除所有只在UI存活时执行的任务订阅
         uiCompositeDisposable.dispose()
     }

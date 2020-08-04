@@ -23,6 +23,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
@@ -39,22 +43,17 @@ dependencies {
     implementation rootProject.ext.androidX.viewpager2
     implementation rootProject.ext.androidX.gridlayout
     implementation rootProject.ext.androidX.multidex
-    implementation rootProject.ext.others.BaseRecyclerViewAdapterHelper
-    implementation rootProject.ext.others.rxjava
-    implementation rootProject.ext.others.rxandroid
-    implementation rootProject.ext.others.rxkotlin
-    implementation rootProject.ext.others.gson
     implementation rootProject.ext.others.rxpermissions
     implementation rootProject.ext.others.SmartRefreshLayout
     implementation project(path: ':quickmvp')
-    kapt rootProject.ext.others.dagger2_android_processor
-    kapt rootProject.ext.others.dagger2_compiler
-    implementation rootProject.ext.others.glide
-    kapt rootProject.ext.others.glide_compiler
     implementation rootProject.ext.others.retrofit
     implementation rootProject.ext.others.converter_gson
     implementation rootProject.ext.others.converter_scalars
     implementation rootProject.ext.others.logging_interceptor
     implementation rootProject.ext.others.okhttp_cookie_jar
     implementation rootProject.ext.others.retrofit2_rxjava2_adapter
+
+    /*依赖包加了，这里还是要加，不然不会在编译时解析注解自动生成代码*/
+    kapt rootProject.ext.others.dagger2_android_processor
+    kapt rootProject.ext.others.dagger2_compiler
 }

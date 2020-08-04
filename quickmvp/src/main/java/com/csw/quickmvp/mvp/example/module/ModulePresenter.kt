@@ -19,6 +19,11 @@ class ModulePresenter @Inject constructor(
 ) : BasePresenterImpl<ModuleContract.View>(view)
     , ModuleContract.Presenter {
 
+    override fun onCreated() {
+        super.onCreated()
+        appModel.log(this)
+    }
+
     override fun setInitParams() {
     }
 

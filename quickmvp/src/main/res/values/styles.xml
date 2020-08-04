@@ -1,15 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Base application theme. -->
-    <style name="quick_mvp_AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/quick_mvp_colorPrimary</item>
-        <item name="colorPrimaryDark">@color/quick_mvp_colorPrimaryDark</item>
-        <item name="colorAccent">@color/quick_mvp_colorAccent</item>
-    </style>
-
     <!--滑动返回透明背景-->
-    <style name="quick_mvp_SwipeBackStyle" parent="quick_mvp_AppTheme">
+    <style name="quick_mvp_SwipeBackStyle" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>

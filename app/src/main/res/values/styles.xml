@@ -1,10 +1,39 @@
 <resources>
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!--状态栏颜色-->
+        <item name="android:statusBarColor">?attr/colorPrimary</item>
+        <!--窗口背景色-->
+        <item name="android:windowBackground">?android:colorBackground</item>
+
+        <!--toolbar设置-->
+        <item name="toolbarStyle">@style/MyToolbarStyle</item>
+        <item name="toolbarNavigationButtonStyle">@style/MyToolbarNavigationStyle</item>
     </style>
 
+    <!--toolbar样式-->
+    <style name="MyToolbarStyle" parent="Widget.MaterialComponents.Toolbar">
+        <!--右边的padding-->
+        <item name="android:paddingEnd">10dp</item>
+        <!--背景色-->
+        <item name="android:background">?attr/colorPrimary</item>
+        <!--这里设置标题颜色 titleTextColor属于Toolbar的样式，不用加android:-->
+        <item name="titleTextColor">?attr/colorOnPrimary</item>
+    </style>
+
+    <!--设置返回按钮样式 避免图片尺寸带来的影响-->
+    <style name="MyToolbarNavigationStyle" parent="Widget.AppCompat.Toolbar.Button.Navigation">
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
+
+        <item name="android:scaleType">centerInside</item>
+        <item name="android:adjustViewBounds">true</item>
+    </style>
+
+    <style name="SecondaryViewStyle">
+        <item name="android:background">?attr/colorSecondary</item>
+        <item name="android:textColor">?attr/colorOnSecondary</item>
+    </style>
 </resources>

@@ -36,7 +36,7 @@ class ModuleView : BaseMVPActivity<ModuleContract.Presenter>(), ModuleContract.V
     //View------------------------------------------------------------------------------------------
 
     override fun updateUI() {
-
+        appModel.log(this)
     }
 
 }
