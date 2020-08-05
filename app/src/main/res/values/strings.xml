@@ -7,8 +7,10 @@
     <string name="toast_device_unsupport_bluetooth">当前设备不支持蓝牙</string>
 
     <string name="unknow">未知</string>
-    <string name="bondStateNONE">未绑定</string>
-    <string name="bondStateBonding">正在绑定中</string>
-    <string name="bondStateBonded">已绑定</string>
+    <string name="bond_state_none">未绑定</string>
+    <string name="bond_state_bonding">正在绑定中</string>
+    <string name="bond_state_bonded">已绑定</string>
     <string name="toast_must_provide_location_permission_for_use_bluetooth">使用蓝牙功能必须提供位置信息权限</string>
+    <string name="bonded_device">已配对的设备</string>
+    <string name="enable_device">可用设备</string>
 </resources>

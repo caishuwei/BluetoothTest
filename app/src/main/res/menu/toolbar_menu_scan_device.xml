@@ -4,8 +4,8 @@
 
     <item
         android:id="@+id/menu_scan"
-        android:icon="@drawable/icon_scan"
         android:title="@string/menu_scan"
+        app:actionLayout="@layout/menu_scan"
         app:showAsAction="ifRoom" />
 
 </menu>

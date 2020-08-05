@@ -32,6 +32,7 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation rootProject.ext.androidX.ktx
     implementation rootProject.ext.androidX.appcompat
     implementation rootProject.ext.androidX.annotations
     implementation rootProject.ext.androidX.material
@@ -52,7 +53,8 @@ dependencies {
     implementation rootProject.ext.others.logging_interceptor
     implementation rootProject.ext.others.okhttp_cookie_jar
     implementation rootProject.ext.others.retrofit2_rxjava2_adapter
-
+    implementation rootProject.ext.others.coroutines_core
+    implementation rootProject.ext.others.coroutines_android
     /*依赖包加了，这里还是要加，不然不会在编译时解析注解自动生成代码*/
     kapt rootProject.ext.others.dagger2_android_processor
     kapt rootProject.ext.others.dagger2_compiler

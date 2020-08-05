@@ -2,6 +2,7 @@ package com.csw.bluetooth.app
 
 import android.app.Application
 import android.content.Context
+import com.csw.bluetooth.service.bluetooth.classic.ClassicBluetoothService
 import com.csw.bluetooth.ui.scan.ScanDeviceComponent
 import com.csw.quickmvp.mvp.base.AppSingleton
 import dagger.BindsInstance
@@ -14,6 +15,7 @@ import dagger.Provides
 interface AppComponent {
 
     fun inject(myApplication: MyApplication)
+    fun inject(myApplication: ClassicBluetoothService)
 
     fun getScanDeviceComponentBuilder(): ScanDeviceComponent.Builder
 

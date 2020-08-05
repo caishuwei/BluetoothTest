@@ -2,10 +2,14 @@ package com.csw.bluetooth.ui.scan
 
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
+import android.os.IBinder
+import com.chad.library.adapter.base.entity.MultiItemEntity
+import com.csw.bluetooth.IClassicBluetoothInterface
+import com.csw.bluetooth.R
+import com.csw.bluetooth.entities.BluetoothDeviceWrap
+import com.csw.bluetooth.entities.DevicesGroup
+import com.csw.bluetooth.service.bluetooth.classic.ClassicBluetoothService
 import com.csw.quickmvp.mvp.base.BasePresenterImpl
 import javax.inject.Inject
 
@@ -16,7 +20,13 @@ class ScanDevicePresenter @Inject constructor(
 ) : BasePresenterImpl<ScanDeviceContract.View>(view)
     , ScanDeviceContract.Presenter {
     private val bluetoothDevices = ArrayList<BluetoothDevice>()
-    private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
+    private val boundDevices = DevicesGroup(context.getString(R.string.bonded_device), ArrayList())
+    private val otherDevices = DevicesGroup(context.getString(R.string.enable_device), ArrayList())
+    private val uiList = ArrayList<MultiItemEntity>().apply {
+        add(boundDevices)
+        add(otherDevices)
+    }
+    private val conn = ClassicBluetoothServiceConnection()
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val action = intent?.action
@@ -24,56 +34,25 @@ class ScanDevicePresenter @Inject constructor(
                 return
             }
             when (action) {
-                //蓝牙设备开关
-                BluetoothAdapter.ACTION_STATE_CHANGED -> {
-                    when (intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1)) {
-                        BluetoothAdapter.STATE_TURNING_ON -> {
-                            //正在开启蓝牙
-                        }
-                        BluetoothAdapter.STATE_ON -> {
-                            //蓝牙已打开
-                            if (uiIsResumed) {
-                                //当前界面处于前台，开始扫描
-                                beginScan()
-                            }
-                        }
-                        BluetoothAdapter.STATE_TURNING_OFF -> {
-                            //正在关闭蓝牙
-                        }
-                        BluetoothAdapter.STATE_OFF -> {
-                            //蓝牙已关闭
-                            view.setScanButtonEnable(true)
-                        }
-                        else -> {
-                        }
-                    }
-                }
                 //开始扫描附近蓝牙设备
                 BluetoothAdapter.ACTION_DISCOVERY_STARTED -> {
                     view.onScanStarted()
-                    view.setScanButtonEnable(false)
                 }
                 //结束扫描
                 BluetoothAdapter.ACTION_DISCOVERY_FINISHED -> {
                     view.onScanFinish()
-                    view.setScanButtonEnable(true)
                 }
-                //蓝牙设备绑定状态发生改变
-                BluetoothDevice.ACTION_BOND_STATE_CHANGED -> {
-                    view.updateDeviceList(bluetoothDevices)
-                }
-                //发现新设备
-                BluetoothDevice.ACTION_FOUND -> {
-                    intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)?.run {
-                        for (bd in bluetoothDevices) {
-                            if (bd.address == address) {
-                                //已存在设备
-                                return
-                            }
-                        }
-                        bluetoothDevices.add(this)
-                        view.updateDeviceList(bluetoothDevices)
+                //列表发生变化
+                ClassicBluetoothService.ACTION_DEVICES_CHANGED -> {
+                    conn.iClassicBluetoothInterface?.bluetoothDevices?.let {
+                        bluetoothDevices.clear()
+                        bluetoothDevices.addAll(it)
+                        updateViewList()
                     }
+                }
+                //蓝牙设备状态发生改变
+                ClassicBluetoothService.ACTION_DEVICE_STATE_CHANGED -> {
+                    updateViewList()
                 }
             }
         }
@@ -81,71 +60,84 @@ class ScanDevicePresenter @Inject constructor(
 
     override fun onUICreated() {
         super.onUICreated()
+        ClassicBluetoothService.startService(context)
+        context.bindService(
+            Intent(context, ClassicBluetoothService::class.java),
+            conn,
+            Context.BIND_AUTO_CREATE
+        )
         context.registerReceiver(receiver, IntentFilter().apply {
-            addAction(BluetoothAdapter.ACTION_STATE_CHANGED)
             addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED)
             addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
-            addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
-            addAction(BluetoothDevice.ACTION_FOUND)
+            addAction(ClassicBluetoothService.ACTION_DEVICES_CHANGED)
+            addAction(ClassicBluetoothService.ACTION_DEVICE_STATE_CHANGED)
         })
-    }
-
-    override fun initUIData() {
-        super.initUIData()
-        if (bluetoothAdapter == null) {
-            view.onDeviceNoSupportBluetooth()
-            view.setScanButtonEnable(false)
-        } else {
-            bluetoothDevices.clear()
-            bluetoothAdapter?.bondedDevices?.run {
-                bluetoothDevices.addAll(this)
-            }
-            view.updateDeviceList(bluetoothDevices)
-        }
     }
 
     override fun onUIPause() {
         //界面退出前台，取消蓝牙扫描
-        bluetoothAdapter?.cancelDiscovery()
+        cancelDiscovery()
         super.onUIPause()
     }
 
     override fun onUIDestroy() {
+        context.unbindService(conn)
         context.unregisterReceiver(receiver)
         super.onUIDestroy()
     }
 
-    //presenter-------------------------------------------------------------------------------------
-    override fun beginScan() {
-        bluetoothAdapter?.run {
-            if (!isDiscovering) {
-                //开始扫描，每次扫描大概12秒，可以调用cancelDiscovery()提前停止
-                if (!startDiscovery()) {
-                    //返回false表示蓝牙未开启
-                    if (!isEnabled) {
-                        //开启蓝牙
-                        enable()
-                    }
-                }
+    private fun updateViewList() {
+        boundDevices.subItems.clear()
+        otherDevices.subItems.clear()
+        for (bd in bluetoothDevices) {
+            if (bd.bondState == BluetoothDevice.BOND_BONDED) {
+                boundDevices.subItems.add(BluetoothDeviceWrap(bd))
+            } else {
+                otherDevices.subItems.add(BluetoothDeviceWrap(bd))
             }
         }
+        uiList.clear()
+        uiList.add(boundDevices)
+        if (boundDevices.isExpanded) {
+            uiList.addAll(boundDevices.subItems)
+        }
+        uiList.add(otherDevices)
+        if (otherDevices.isExpanded) {
+            uiList.addAll(otherDevices.subItems)
+        }
+        view.updateDeviceList(uiList)
+    }
+
+    //presenter-------------------------------------------------------------------------------------
+    override fun startDiscovery() {
+        ClassicBluetoothService.beginDiscovery(context)
+    }
+
+    override fun cancelDiscovery() {
+        ClassicBluetoothService.cancelDiscovery(context)
     }
 
     override fun connectDevice(bluetoothDevice: BluetoothDevice) {
-        //先取消扫描
-        bluetoothAdapter?.cancelDiscovery()
-        when (bluetoothDevice.bondState) {
-            BluetoothDevice.BOND_NONE -> {
-                bluetoothDevice.createBond()
-            }
-            BluetoothDevice.BOND_BONDING -> {
-                //等待配对成功，会有广播回调
-            }
-            BluetoothDevice.BOND_BONDED -> {
-                //连接设备
-            }
+        conn.iClassicBluetoothInterface?.connectBluetoothDevice(bluetoothDevice)
+    }
+
+    //inner class-----------------------------------------------------------------------------------
+    private inner class ClassicBluetoothServiceConnection : ServiceConnection {
+        var iClassicBluetoothInterface: IClassicBluetoothInterface? = null
+        override fun onServiceDisconnected(name: ComponentName?) {
+            iClassicBluetoothInterface = null
         }
 
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            iClassicBluetoothInterface = IClassicBluetoothInterface.Stub.asInterface(service)
+            if (uiIsCreated) {
+                iClassicBluetoothInterface?.bluetoothDevices?.let {
+                    bluetoothDevices.clear()
+                    bluetoothDevices.addAll(it)
+                    updateViewList()
+                }
+            }
+        }
     }
 
 }

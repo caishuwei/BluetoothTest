@@ -12,6 +12,13 @@ ext {
 
     //android support包至28.0.0开始不再更新，现改用androidX包
     androidX = [
+
+            core            : "androidx.core:core:1.5.0-alpha01",
+            /**
+             * ktx是Jetpack中提供的一个android kotlin扩展库，提供了一系列的doOnXXX扩展方法便利开发
+             * https://developer.android.google.cn/kotlin/ktx
+             */
+            ktx             : "androidx.core:core-ktx:1.3.1",
             appcompat       : "androidx.appcompat:appcompat:1.1.0",
             annotations     : "androidx.annotation:annotation:1.1.0",
             material        : "com.google.android.material:material:1.1.0",
@@ -134,5 +141,14 @@ ext {
             zxing_core                   : "com.google.zxing:core:3.3.3",
             //jsoup 一个网页解析工具
             jsoup                        : "org.jsoup:jsoup:1.13.1",
+            /**
+             * kotlin 协程核心包
+             */
+            coroutines_core              : "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.8-1.4.0-rc",
+            /**
+             * kotlin 协程android扩展包
+             */
+            coroutines_android           : "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.8-1.4.0-rc",
+
     ]
 }
