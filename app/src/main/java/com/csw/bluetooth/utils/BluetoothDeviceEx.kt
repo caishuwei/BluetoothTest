@@ -12,7 +12,7 @@ fun getTypeName(type: Int): String {
             "经典蓝牙"
         }
         BluetoothDevice.DEVICE_TYPE_LE -> {
-            "低电耗蓝牙"
+            "低功耗蓝牙"
         }
         BluetoothDevice.DEVICE_TYPE_DUAL -> {
             "兼容"

@@ -28,4 +28,8 @@ class ClassicNotificationHelper @Inject constructor(private val context: Context
     fun update() {
         notificationManager?.notify(id, notification)
     }
+
+    fun cancel() {
+        notificationManager?.cancel(id)
+    }
 }

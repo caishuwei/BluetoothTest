@@ -79,7 +79,7 @@ class ScanDeviceActivity : BaseMVPActivity<ScanDeviceContract.Presenter>(),
                             if (isExpanded) {
                                 adapter.collapse(p)
                             } else {
-                                adapter.collapseAll()
+//                                adapter.collapseAll()
                                 adapter.expand(adapter.data.indexOf(this))
                             }
                         }

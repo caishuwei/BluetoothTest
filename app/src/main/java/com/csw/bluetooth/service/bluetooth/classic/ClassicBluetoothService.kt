@@ -167,6 +167,7 @@ class ClassicBluetoothService : Service() {
     }
 
     override fun onDestroy() {
+        classicNotificationHelper.cancel()
         unregisterReceiver(receiver)
         super.onDestroy()
     }
