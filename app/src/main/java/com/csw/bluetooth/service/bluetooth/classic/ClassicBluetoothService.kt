@@ -13,6 +13,13 @@ import android.os.IBinder
 import androidx.core.content.ContextCompat
 import com.csw.bluetooth.IClassicBluetoothInterface
 import com.csw.bluetooth.app.MyApplication
+import com.csw.bluetooth.service.bluetooth.classic.connect.base.IConnectHelper
+import com.csw.bluetooth.service.bluetooth.classic.connect.client.ClientFactory
+import com.csw.bluetooth.service.bluetooth.classic.connect.message.IMessage
+import com.csw.bluetooth.service.bluetooth.classic.connect.message.TextMessage
+import com.csw.bluetooth.service.bluetooth.classic.connect.server.ServerFactory
+import com.csw.bluetooth.utils.getDisplayName
+import com.csw.quickmvp.utils.LogUtils
 import javax.inject.Inject
 
 /**
@@ -48,6 +55,7 @@ class ClassicBluetoothService : Service() {
             )
         }
     }
+
 
     @Inject
     lateinit var classicNotificationHelper: ClassicNotificationHelper
@@ -117,6 +125,8 @@ class ClassicBluetoothService : Service() {
         }
     }
 
+    private var serverConnectHelper: IConnectHelper? = null
+    private var clientConnectHelper: IConnectHelper? = null
     override fun onCreate() {
         super.onCreate()
         MyApplication.instance.appComponent.inject(this)
@@ -136,6 +146,13 @@ class ClassicBluetoothService : Service() {
 
         updateBondedDevices()
         sendBroadcast(Intent(ACTION_DEVICES_CHANGED))
+
+        bluetoothAdapter?.let { adapter ->
+            serverConnectHelper = ServerFactory.getSPPServerConnect(this, adapter)
+                .apply {
+                    connect()
+                }
+        }
     }
 
     private fun updateBondedDevices() {
@@ -167,9 +184,18 @@ class ClassicBluetoothService : Service() {
     }
 
     override fun onDestroy() {
+        clientConnectHelper?.destroy()
+        serverConnectHelper?.destroy()
         classicNotificationHelper.cancel()
         unregisterReceiver(receiver)
         super.onDestroy()
+    }
+
+    fun onNewMessage(device: BluetoothDevice, message: IMessage) {
+        //从设备接收到新的消息
+        if (message is TextMessage) {
+            LogUtils.d(this, "onNewMessage from[${device.getDisplayName()}] ${message.text}")
+        }
     }
 
     //inner class-----------------------------------------------------------------------------------
@@ -216,19 +242,14 @@ class ClassicBluetoothService : Service() {
         override fun connectBluetoothDevice(bluetoothDevice: BluetoothDevice?) {
             bluetoothAdapter?.cancelDiscovery()
             bluetoothDevice?.run {
-                when (bondState) {
-                    BluetoothDevice.BOND_NONE -> {
-                        createBond()
-                        //connectWhenDeviceBoned
-                    }
-                    BluetoothDevice.BOND_BONDING -> {
-                        //connectWhenDeviceBoned
-                    }
-                    BluetoothDevice.BOND_BONDED -> {
-                        //connect
-                    }
-                    else -> {
-                    }
+                clientConnectHelper?.run {
+                    destroy()
+                }
+                clientConnectHelper = ClientFactory.getSPPClientConnect(
+                    this@ClassicBluetoothService,
+                    this
+                ).apply {
+                    connect()
                 }
             }
         }

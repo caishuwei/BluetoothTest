@@ -58,10 +58,10 @@ class ThreadWithHandler(
         }
 
         fun post(r: () -> Unit) {
-            postDelay(r, 0)
+            postDelay(0, r)
         }
 
-        fun postDelay(r: () -> Unit, delayMillis: Long) {
+        fun postDelay(delayMillis: Long, r: () -> Unit) {
             postDelay(Runnable { r.invoke() }, delayMillis)
         }
 
@@ -78,18 +78,27 @@ class ThreadWithHandler(
         }
 
         fun removeCallbacks(r: Runnable) {
-            if (!actions.remove(r)) {
+            if (!removeAction(r)) {
                 handler?.removeCallbacks(r)
             }
+        }
+
+        private fun removeAction(r: Runnable): Boolean {
+            if (actions.isNotEmpty()) {
+                for (action in actions) {
+                    if (action.matchRunnable(r)) {
+                        actions.remove(action)
+                        return true
+                    }
+                }
+            }
+            return false
         }
     }
 
     class HandlerAction(val r: Runnable, val delay: Long) {
-        override fun equals(other: Any?): Boolean {
-            if (other is Runnable) {
-                return r == other
-            }
-            return super.equals(other)
+        fun matchRunnable(runnable: Runnable): Boolean {
+            return r == runnable
         }
     }
 }

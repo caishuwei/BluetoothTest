@@ -1,18 +1,17 @@
 package com.csw.bluetooth.service.bluetooth.classic.connect.message
 
+import com.csw.bluetooth.service.bluetooth.classic.connect.message.header.Header
 import java.io.OutputStream
 
-class TextMessage(text: String) : BaseMessage() {
-
-    private val textByteArray = text.toByteArray()
+class TextMessage(val text: String) : BaseMessage() {
 
     init {
-        headers[ContentType.name] = ContentType.TYPE_JSON
-        headers[ContentLength.name] = textByteArray.size.toString()
+        headers[Header.ContentType.name] = Header.ContentType.TYPE_JSON
+        headers[Header.ContentLength.name] = text.toByteArray().size.toString()
     }
 
     override fun writeBody(outputStream: OutputStream) {
-        outputStream.write(textByteArray)
+        outputStream.write(text.toByteArray())
     }
 
 }

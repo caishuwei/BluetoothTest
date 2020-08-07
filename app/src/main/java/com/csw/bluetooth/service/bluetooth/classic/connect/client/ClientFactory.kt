@@ -1,26 +1,25 @@
-package com.csw.bluetooth.service.bluetooth.classic.connect.server
+package com.csw.bluetooth.service.bluetooth.classic.connect.client
 
-import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
 import com.csw.bluetooth.service.bluetooth.classic.ClassicBluetoothService
 import com.csw.bluetooth.service.bluetooth.classic.connect.base.Constants
 import com.csw.bluetooth.service.bluetooth.classic.connect.base.IConnectHelper
 
-class ServerFactory {
+class ClientFactory {
 
     companion object {
 
-        fun getSPPServerConnect(
+        fun getSPPClientConnect(
             classicBluetoothService: ClassicBluetoothService,
-            bluetoothAdapter: BluetoothAdapter
+            bluetoothDevice: BluetoothDevice
         ): IConnectHelper {
-            return ServerConnectHelper(
+            return ClientConnectHelper(
                 classicBluetoothService,
-                bluetoothAdapter,
+                bluetoothDevice,
                 Constants.SPP_UUID,
-                "通用蓝牙串口协议服务端"
+                "通用蓝牙串口协议客户端"
             )
         }
 
     }
-
 }

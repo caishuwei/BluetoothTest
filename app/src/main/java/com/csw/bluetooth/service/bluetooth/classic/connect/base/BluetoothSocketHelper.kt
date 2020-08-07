@@ -4,9 +4,10 @@ package com.csw.bluetooth.service.bluetooth.classic.connect.base
 
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
-import android.os.Handler
 import com.csw.bluetooth.service.bluetooth.classic.connect.message.IMessage
 import com.csw.bluetooth.service.bluetooth.classic.connect.message.MessageFactory
+import com.csw.bluetooth.utils.getDisplayName
+import com.csw.quickmvp.handler.ThreadWithHandler
 
 /**
  * Socket辅助类，须在有消息处理功能的子线程中初始化
@@ -19,47 +20,66 @@ class BluetoothSocketHelper(
     val readNextRunnable: Runnable = object : Runnable {
         override fun run() {
             read()
-            threadHandler.post(this)
+            readThread.handlerProxy.post(this)
         }
     }
+    private var readThread =
+        ThreadWithHandler("read thread:${bluetoothSocket.remoteDevice.getDisplayName()}").apply {
+            start()
+        }
+    private var writeThread =
+        ThreadWithHandler("write thread:${bluetoothSocket.remoteDevice.getDisplayName()}").apply {
+            start()
+        }
 
-    //post启动第一次数据读取
-    val threadHandler = Handler().apply {
-        post(readNextRunnable)
+    init {
+        //开始循环读取输入流信息
+        readThread.handlerProxy.post(readNextRunnable)
     }
 
     fun read() {
-        try {
-            bluetoothSocket.inputStream.run {
-                MessageFactory.instanceFromInputStream(this)?.let {
-                    
+        readThread.handlerProxy.post {
+            try {
+                bluetoothSocket.inputStream.run {
+                    MessageFactory.instanceFromInputStream(this)?.let {
+                        connectHelper.onNewMessage(getConnectDevice(),it)
+                    }
                 }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                close()
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            close()
         }
     }
 
     fun write(message: IMessage) {
-        try {
-            bluetoothSocket.outputStream.run {
-                message.write(this)
-                flush()
+        writeThread.handlerProxy.post {
+            try {
+                bluetoothSocket.outputStream.run {
+                    message.write(this)
+                    flush()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                close()
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            close()
         }
     }
 
     fun close() {
-        connectHelper.disconnect()
-        try {
-            bluetoothSocket.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
+        if (connectHelper.getState() == IConnectHelper.STATE_CONNECTED) {
+            connectHelper.disconnect()
         }
+        if (bluetoothSocket.isConnected) {
+            try {
+                bluetoothSocket.close()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        //关闭线程
+        readThread.quit()
+        writeThread.quit()
     }
 
     fun getConnectDevice(): BluetoothDevice {
