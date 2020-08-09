@@ -4,6 +4,7 @@ package com.csw.bluetooth.service.bluetooth.classic.connect.base
 
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
+import com.csw.bluetooth.service.bluetooth.classic.ClassicBluetoothService
 import com.csw.bluetooth.service.bluetooth.classic.connect.message.IMessage
 import com.csw.bluetooth.service.bluetooth.classic.connect.message.MessageFactory
 import com.csw.bluetooth.utils.getDisplayName
@@ -12,8 +13,8 @@ import com.csw.quickmvp.handler.ThreadWithHandler
 /**
  * Socket辅助类，须在有消息处理功能的子线程中初始化
  */
-class BluetoothSocketHelper(
-    val connectHelper: IConnectHelper,
+class ConnectedDeviceHelper(
+    val classicBluetoothService: ClassicBluetoothService,
     val bluetoothSocket: BluetoothSocket
 ) {
     //循环读取下一条数据
@@ -42,7 +43,7 @@ class BluetoothSocketHelper(
             try {
                 bluetoothSocket.inputStream.run {
                     MessageFactory.instanceFromInputStream(this)?.let {
-                        connectHelper.onNewMessage(getConnectDevice(),it)
+                        classicBluetoothService.onNewMessage(getConnectDevice(),it)
                     }
                 }
             } catch (e: Exception) {
@@ -67,9 +68,6 @@ class BluetoothSocketHelper(
     }
 
     fun close() {
-        if (connectHelper.getState() == IConnectHelper.STATE_CONNECTED) {
-            connectHelper.disconnect()
-        }
         if (bluetoothSocket.isConnected) {
             try {
                 bluetoothSocket.close()
@@ -80,6 +78,7 @@ class BluetoothSocketHelper(
         //关闭线程
         readThread.quit()
         writeThread.quit()
+        classicBluetoothService.onDeviceDisconnect(this)
     }
 
     fun getConnectDevice(): BluetoothDevice {

@@ -13,11 +13,12 @@ import android.os.IBinder
 import androidx.core.content.ContextCompat
 import com.csw.bluetooth.IClassicBluetoothInterface
 import com.csw.bluetooth.app.MyApplication
-import com.csw.bluetooth.service.bluetooth.classic.connect.base.IConnectHelper
-import com.csw.bluetooth.service.bluetooth.classic.connect.client.ClientFactory
+import com.csw.bluetooth.service.bluetooth.classic.connect.base.ConnectedDeviceHelper
 import com.csw.bluetooth.service.bluetooth.classic.connect.message.IMessage
 import com.csw.bluetooth.service.bluetooth.classic.connect.message.TextMessage
-import com.csw.bluetooth.service.bluetooth.classic.connect.server.ServerFactory
+import com.csw.bluetooth.service.bluetooth.classic.connect.task.ClientConnectTask
+import com.csw.bluetooth.service.bluetooth.classic.connect.task.ICancelableConnectTask
+import com.csw.bluetooth.service.bluetooth.classic.connect.task.ServerConnectTask
 import com.csw.bluetooth.utils.getDisplayName
 import com.csw.quickmvp.utils.LogUtils
 import javax.inject.Inject
@@ -56,6 +57,9 @@ class ClassicBluetoothService : Service() {
         }
     }
 
+
+    private var connectTask: ICancelableConnectTask? = null
+    private var connectedDevice: ConnectedDeviceHelper? = null
 
     @Inject
     lateinit var classicNotificationHelper: ClassicNotificationHelper
@@ -125,8 +129,6 @@ class ClassicBluetoothService : Service() {
         }
     }
 
-    private var serverConnectHelper: IConnectHelper? = null
-    private var clientConnectHelper: IConnectHelper? = null
     override fun onCreate() {
         super.onCreate()
         MyApplication.instance.appComponent.inject(this)
@@ -147,8 +149,13 @@ class ClassicBluetoothService : Service() {
         updateBondedDevices()
         sendBroadcast(Intent(ACTION_DEVICES_CHANGED))
 
+        startServerConnectTask()
+    }
+
+    private fun startServerConnectTask() {
         bluetoothAdapter?.let { adapter ->
-            serverConnectHelper = ServerFactory.getSPPServerConnect(this, adapter)
+            connectTask?.cancel()
+            connectTask = ServerConnectTask.getSPPServerConnectTask(this, adapter)
                 .apply {
                     connect()
                 }
@@ -184,17 +191,35 @@ class ClassicBluetoothService : Service() {
     }
 
     override fun onDestroy() {
-        clientConnectHelper?.destroy()
-        serverConnectHelper?.destroy()
         classicNotificationHelper.cancel()
         unregisterReceiver(receiver)
         super.onDestroy()
+    }
+
+    fun onTaskEnd(cancelableConnectTask: ICancelableConnectTask) {
+        if (connectTask == cancelableConnectTask) {
+            connectTask = null
+            if (connectedDevice == null) {
+                startServerConnectTask()
+            }
+        }
     }
 
     fun onNewMessage(device: BluetoothDevice, message: IMessage) {
         //从设备接收到新的消息
         if (message is TextMessage) {
             LogUtils.d(this, "onNewMessage from[${device.getDisplayName()}] ${message.text}")
+        }
+    }
+
+    fun onDeviceConnected(connectedDeviceHelper: ConnectedDeviceHelper) {
+        connectedDevice?.close()
+        connectedDevice = connectedDeviceHelper
+    }
+
+    fun onDeviceDisconnect(connectedDeviceHelper: ConnectedDeviceHelper) {
+        if (connectedDevice == connectedDeviceHelper) {
+            connectedDevice = null
         }
     }
 
@@ -242,15 +267,11 @@ class ClassicBluetoothService : Service() {
         override fun connectBluetoothDevice(bluetoothDevice: BluetoothDevice?) {
             bluetoothAdapter?.cancelDiscovery()
             bluetoothDevice?.run {
-                clientConnectHelper?.run {
-                    destroy()
-                }
-                clientConnectHelper = ClientFactory.getSPPClientConnect(
+                connectTask?.cancel()
+                connectTask = ClientConnectTask.getSPPClientConnectTask(
                     this@ClassicBluetoothService,
                     this
-                ).apply {
-                    connect()
-                }
+                ).apply { connect() }
             }
         }
 
