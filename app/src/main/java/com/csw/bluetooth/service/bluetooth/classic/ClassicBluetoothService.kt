@@ -33,6 +33,7 @@ class ClassicBluetoothService : Service() {
     companion object {
         const val ACTION_DEVICES_CHANGED = "ACTION_DEVICES_CHANGED"
         const val ACTION_DEVICE_STATE_CHANGED = "ACTION_DEVICE_STATE_CHANGED"
+        const val ACTION_DEVICE_CONNECT_STATE_CHANGED = "ACTION_DEVICE_CONNECT_STATE_CHANGED"
         private const val ACTION_BEGIN_DISCOVERY = "ACTION_BEGIN_DISCOVERY"
         private const val ACTION_CANCEL_DISCOVERY = "ACTION_CANCEL_DISCOVERY"
 
@@ -59,7 +60,7 @@ class ClassicBluetoothService : Service() {
 
 
     private var connectTask: ICancelableConnectTask? = null
-    private var connectedDevice: ConnectedDeviceHelper? = null
+    private var connectedDeviceHelper: ConnectedDeviceHelper? = null
 
     @Inject
     lateinit var classicNotificationHelper: ClassicNotificationHelper
@@ -199,7 +200,7 @@ class ClassicBluetoothService : Service() {
     fun onTaskEnd(cancelableConnectTask: ICancelableConnectTask) {
         if (connectTask == cancelableConnectTask) {
             connectTask = null
-            if (connectedDevice == null) {
+            if (connectedDeviceHelper == null) {
                 startServerConnectTask()
             }
         }
@@ -213,13 +214,13 @@ class ClassicBluetoothService : Service() {
     }
 
     fun onDeviceConnected(connectedDeviceHelper: ConnectedDeviceHelper) {
-        connectedDevice?.close()
-        connectedDevice = connectedDeviceHelper
+        this.connectedDeviceHelper?.close()
+        this.connectedDeviceHelper = connectedDeviceHelper
     }
 
     fun onDeviceDisconnect(connectedDeviceHelper: ConnectedDeviceHelper) {
-        if (connectedDevice == connectedDeviceHelper) {
-            connectedDevice = null
+        if (this.connectedDeviceHelper == connectedDeviceHelper) {
+            this.connectedDeviceHelper = null
         }
     }
 
@@ -266,8 +267,20 @@ class ClassicBluetoothService : Service() {
 
         override fun connectBluetoothDevice(bluetoothDevice: BluetoothDevice?) {
             bluetoothAdapter?.cancelDiscovery()
+            if (bluetoothDevice == connectedDeviceHelper?.getConnectDevice()) {
+                //设备已经连接
+                return
+            }
+            if (bluetoothDevice == connectTask?.getDestDevice()) {
+                //设备正在连接
+                return
+            }
             bluetoothDevice?.run {
+                //关闭已连接设备
+                connectedDeviceHelper?.close()
+                //取消正在连接的任务
                 connectTask?.cancel()
+                //开始一个新的连接任务连接到该设备
                 connectTask = ClientConnectTask.getSPPClientConnectTask(
                     this@ClassicBluetoothService,
                     this
@@ -275,6 +288,24 @@ class ClassicBluetoothService : Service() {
             }
         }
 
+        override fun getConnectingDevice(): BluetoothDevice? {
+            return connectTask?.getDestDevice()
+        }
+
+        override fun getConnectedDevice(): BluetoothDevice? {
+            return connectedDeviceHelper?.getConnectDevice()
+        }
+
+        override fun sendTextToDevice(bluetoothDevice: BluetoothDevice?, msg: String?): Boolean {
+            if (bluetoothDevice != null && msg != null) {
+                connectedDeviceHelper?.run {
+                    if (getConnectDevice() == bluetoothDevice) {
+                        return write(TextMessage(msg))
+                    }
+                }
+            }
+            return false
+        }
 
     }
 }

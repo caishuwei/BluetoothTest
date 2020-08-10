@@ -43,7 +43,7 @@ class ConnectedDeviceHelper(
             try {
                 bluetoothSocket.inputStream.run {
                     MessageFactory.instanceFromInputStream(this)?.let {
-                        classicBluetoothService.onNewMessage(getConnectDevice(),it)
+                        classicBluetoothService.onNewMessage(getConnectDevice(), it)
                     }
                 }
             } catch (e: Exception) {
@@ -53,7 +53,7 @@ class ConnectedDeviceHelper(
         }
     }
 
-    fun write(message: IMessage) {
+    fun write(message: IMessage): Boolean {
         writeThread.handlerProxy.post {
             try {
                 bluetoothSocket.outputStream.run {
@@ -65,6 +65,7 @@ class ConnectedDeviceHelper(
                 close()
             }
         }
+        return true
     }
 
     fun close() {

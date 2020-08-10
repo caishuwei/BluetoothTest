@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <FrameLayout
+        android:id="@+id/extrasFunctionPanel"
+        android:layout_width="0dp"
+        android:layout_height="300dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/extrasFunction"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:padding="10dp"
+        android:src="@drawable/svg_ic_add"
+        app:layout_constraintBottom_toTopOf="@id/extrasFunctionPanel"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="ContentDescription" />
+
+    <Button
+        android:id="@+id/send"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginEnd="10dp"
+        android:minWidth="0dp"
+        android:text="@string/btn_send"
+        app:layout_constraintBottom_toBottomOf="@id/extrasFunction"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/extrasFunction" />
+
+    <EditText
+        android:id="@+id/msg"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/input_hint"
+        android:importantForAutofill="no"
+        android:inputType="none"
+        app:layout_constraintBottom_toTopOf="@id/extrasFunctionPanel"
+        app:layout_constraintEnd_toStartOf="@id/send"
+        app:layout_constraintStart_toEndOf="@id/extrasFunction"
+        tools:text="sdasdasdasdasdasdadasdadsdadadadadaddasdasdasdasd" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

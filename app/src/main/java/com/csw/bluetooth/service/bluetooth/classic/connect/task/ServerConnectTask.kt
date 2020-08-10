@@ -1,11 +1,11 @@
 package com.csw.bluetooth.service.bluetooth.classic.connect.task
 
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothServerSocket
 import com.csw.bluetooth.service.bluetooth.classic.ClassicBluetoothService
 import com.csw.bluetooth.service.bluetooth.classic.connect.base.ConnectedDeviceHelper
 import com.csw.bluetooth.service.bluetooth.classic.connect.base.Constants
-import com.csw.bluetooth.service.bluetooth.classic.connect.server.ServerConnectHelper
 import com.csw.quickmvp.utils.LogUtils
 import java.util.*
 
@@ -69,5 +69,8 @@ class ServerConnectTask(
         classicBluetoothService.onTaskEnd(this)
     }
 
+    override fun getDestDevice(): BluetoothDevice? {
+        return null
+    }
 
 }

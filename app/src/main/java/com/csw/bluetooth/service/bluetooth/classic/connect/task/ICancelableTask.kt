@@ -1,5 +1,7 @@
 package com.csw.bluetooth.service.bluetooth.classic.connect.task
 
+import android.bluetooth.BluetoothDevice
+
 /**
  * 可取消的连接任务
  */
@@ -27,4 +29,9 @@ interface ICancelableConnectTask {
      * 取消
      */
     fun cancel()
+
+    /**
+     * 获取目标设备
+     */
+    fun getDestDevice(): BluetoothDevice?
 }

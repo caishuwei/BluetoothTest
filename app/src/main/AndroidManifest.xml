@@ -33,10 +33,15 @@
             android:name=".ui.scan.ScanDeviceActivity"
             android:configChanges="screenSize|layoutDirection|orientation" />
 
+        <activity
+            android:name=".ui.room.ChatActivity"
+            android:configChanges="screenSize|layoutDirection|orientation" />
+
         <service
             android:name=".service.bluetooth.classic.ClassicBluetoothService"
             android:exported="false"
             android:foregroundServiceType="connectedDevice" />
+
     </application>
 
 </manifest>

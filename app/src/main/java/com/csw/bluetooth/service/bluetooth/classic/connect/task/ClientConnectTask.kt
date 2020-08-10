@@ -5,7 +5,6 @@ import android.bluetooth.BluetoothSocket
 import com.csw.bluetooth.service.bluetooth.classic.ClassicBluetoothService
 import com.csw.bluetooth.service.bluetooth.classic.connect.base.ConnectedDeviceHelper
 import com.csw.bluetooth.service.bluetooth.classic.connect.base.Constants
-import com.csw.bluetooth.service.bluetooth.classic.connect.client.ClientConnectHelper
 import com.csw.quickmvp.utils.LogUtils
 import java.util.*
 
@@ -19,7 +18,7 @@ class ClientConnectTask(
     private val name: String
 ) : ConnectTask() {
 
-    companion object{
+    companion object {
 
         fun getSPPClientConnectTask(
             classicBluetoothService: ClassicBluetoothService,
@@ -67,5 +66,7 @@ class ClientConnectTask(
         classicBluetoothService.onTaskEnd(this)
     }
 
-
+    override fun getDestDevice(): BluetoothDevice? {
+        return bluetoothDevice
+    }
 }

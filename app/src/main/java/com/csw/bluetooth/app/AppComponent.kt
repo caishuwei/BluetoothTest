@@ -3,6 +3,7 @@ package com.csw.bluetooth.app
 import android.app.Application
 import android.content.Context
 import com.csw.bluetooth.service.bluetooth.classic.ClassicBluetoothService
+import com.csw.bluetooth.ui.room.ChatComponent
 import com.csw.bluetooth.ui.scan.ScanDeviceComponent
 import com.csw.quickmvp.mvp.base.AppSingleton
 import dagger.BindsInstance
@@ -18,6 +19,7 @@ interface AppComponent {
     fun inject(myApplication: ClassicBluetoothService)
 
     fun getScanDeviceComponentBuilder(): ScanDeviceComponent.Builder
+    fun getChatComponentBuilder(): ChatComponent.Builder
 
     /**
      * 实例工厂构建，可以先注入一些已存的实例

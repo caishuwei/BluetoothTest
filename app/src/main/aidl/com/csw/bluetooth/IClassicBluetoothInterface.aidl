@@ -26,4 +26,19 @@ interface IClassicBluetoothInterface {
      * 连接蓝牙设备
      */
     void connectBluetoothDevice(in BluetoothDevice bluetoothDevice);
+
+    /**
+     * 获取正在连接的设备
+     */
+    BluetoothDevice getConnectingDevice();
+
+    /**
+     * 获取已连接的设备
+     */
+    BluetoothDevice getConnectedDevice();
+
+    /**
+     * 发送文本消息到设备
+     */
+    boolean sendTextToDevice(in BluetoothDevice bluetoothDevice, in String msg);
 }

@@ -13,4 +13,7 @@
     <string name="toast_must_provide_location_permission_for_use_bluetooth">使用蓝牙功能必须提供位置信息权限</string>
     <string name="bonded_device">已配对的设备</string>
     <string name="enable_device">可用设备</string>
+    <string name="btn_send">发送</string>
+    <string name="input_hint">请输入文本并点击发送</string>
+    <string name="menu_connect_state">连接状态</string>
 </resources>
