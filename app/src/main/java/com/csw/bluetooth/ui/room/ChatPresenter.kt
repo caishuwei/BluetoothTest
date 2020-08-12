@@ -1,17 +1,13 @@
 package com.csw.bluetooth.ui.room
 
 import android.bluetooth.BluetoothDevice
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
+import android.content.*
 import android.os.IBinder
 import com.csw.bluetooth.IClassicBluetoothInterface
 import com.csw.bluetooth.service.bluetooth.ConnectState
 import com.csw.bluetooth.service.bluetooth.classic.ClassicBluetoothService
 import com.csw.bluetooth.utils.getDisplayName
 import com.csw.quickmvp.mvp.base.BasePresenterImpl
-import kotlinx.android.synthetic.main.view_chat_input.*
 import javax.inject.Inject
 
 class ChatPresenter @Inject constructor(
@@ -21,9 +17,33 @@ class ChatPresenter @Inject constructor(
     BasePresenterImpl<ChatContract.View>(view), ChatContract.Presenter {
     private var bluetoothDevice: BluetoothDevice? = null
     private val conn = ClassicBluetoothServiceConnection()
+    private val receiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            intent?.action.run {
+                when (this) {
+                    ClassicBluetoothService.ACTION_DEVICE_CONNECT_STATE_CHANGED -> {
+                        intent?.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
+                            ?.run {
+                                if (this == bluetoothDevice) {
+                                    intent?.getStringExtra(ClassicBluetoothService.EXTRA_DEVICE_CONNECT_STATE)
+                                        ?.run {
+                                            view.setConnectState(ConnectState.valueOf(this))
+                                        }
+                                }
+                            }
+                    }
+                    else -> {
+                    }
+                }
+            }
+        }
+    }
 
     override fun onUICreated() {
         super.onUICreated()
+        context.registerReceiver(receiver, IntentFilter().apply {
+            addAction(ClassicBluetoothService.ACTION_DEVICE_CONNECT_STATE_CHANGED)
+        })
         ClassicBluetoothService.startService(context)
         context.bindService(
             Intent(context, ClassicBluetoothService::class.java),
@@ -71,6 +91,7 @@ class ChatPresenter @Inject constructor(
     }
 
     override fun onUIDestroy() {
+        context.unregisterReceiver(receiver)
         context.unbindService(conn)
         super.onUIDestroy()
     }

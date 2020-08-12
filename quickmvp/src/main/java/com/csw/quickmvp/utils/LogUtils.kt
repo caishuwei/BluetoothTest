@@ -5,6 +5,7 @@ package com.csw.quickmvp.utils
 import android.util.Log
 import com.csw.quickmvp.BuildConfig
 import com.csw.quickmvp.SDK
+import com.csw.quickmvp.log.LogInfo
 
 /**
  * 日志输出工具类，只在调试安装下才输出日志
@@ -22,6 +23,16 @@ class LogUtils {
             Log.ERROR,//错误
             Log.ASSERT
         )
+
+        private val listeners = HashSet<LogListener>()
+
+        fun addListener(logListener: LogListener) {
+            listeners.add(logListener)
+        }
+
+        fun removeListener(logListener: LogListener) {
+            listeners.remove(logListener)
+        }
 
         fun i(tag: Any = SDK.getApplication().packageName, msg: String) {
             log(Log.INFO, tag, msg)
@@ -47,10 +58,6 @@ class LogUtils {
             if (!ENABLE_LOG.contains(level)) {
                 return
             }
-            //仅调试状态下输出
-            if (!BuildConfig.DEBUG) {
-                return
-            }
             //若传入的是某个类的对象，这里获取类名作为tag
             var tagStr = when (tag) {
                 is String -> {
@@ -66,7 +73,16 @@ class LogUtils {
             if (tagStr.isEmpty()) {
                 tagStr = SDK.getApplication().packageName
             }
-
+            if (listeners.isNotEmpty()) {
+                val logInfo = LogInfo(level, System.currentTimeMillis(), tagStr, msg)
+                for (listener in listeners) {
+                    listener.onNewLog(logInfo)
+                }
+            }
+            //仅调试状态下输出
+            if (!BuildConfig.DEBUG) {
+                return
+            }
             when (level) {
                 Log.INFO -> {
                     Log.i(tagStr, msg)
@@ -84,7 +100,10 @@ class LogUtils {
                     Log.e(tagStr, msg)
                 }
             }
-
         }
+    }
+
+    interface LogListener {
+        fun onNewLog(logInfo: LogInfo)
     }
 }

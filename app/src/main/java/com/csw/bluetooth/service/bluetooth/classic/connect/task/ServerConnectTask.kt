@@ -39,9 +39,11 @@ class ServerConnectTask(
 
     override fun doConnect() {
         try {
+            LogUtils.d(this@ServerConnectTask, "doConnect")
             serverSocket = bluetoothAdapter.listenUsingRfcommWithServiceRecord(name, uuid)
                 .apply {
                     //阻塞至serverSocket与客户端连接上
+                    LogUtils.d(this@ServerConnectTask, "accept()")
                     val bluetoothSocket = accept()
                     classicBluetoothService.onDeviceConnected(
                         ConnectedDeviceHelper(
@@ -51,7 +53,7 @@ class ServerConnectTask(
                     )
                 }
         } catch (e: Exception) {
-            LogUtils.e(this, "服务($name)等待客户端连接的过程中抛出了异常")
+            LogUtils.e(this@ServerConnectTask, "等待客户端连接的过程中抛出了异常")
             e.printStackTrace()
         }
     }
@@ -61,7 +63,7 @@ class ServerConnectTask(
             serverSocket?.close()
         } catch (e: Exception) {
             e.printStackTrace()
-            LogUtils.e(this, "($name)关闭过程中抛出了异常")
+            LogUtils.e(this@ServerConnectTask, "关闭过程中抛出了异常")
         }
     }
 

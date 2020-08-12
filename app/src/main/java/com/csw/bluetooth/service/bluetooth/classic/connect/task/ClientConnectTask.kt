@@ -38,7 +38,9 @@ class ClientConnectTask(
     override fun doConnect() {
         try {
             //阻塞至socket与服务端连接上
+            LogUtils.d(this@ClientConnectTask, "doConnect")
             bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(uuid).apply {
+                LogUtils.d(this@ClientConnectTask, "connect()")
                 connect()
                 classicBluetoothService.onDeviceConnected(
                     ConnectedDeviceHelper(
@@ -48,7 +50,7 @@ class ClientConnectTask(
                 )
             }
         } catch (e: Exception) {
-            LogUtils.e(this, "客户端($name)与服务端连接的过程中抛出了异常")
+            LogUtils.e(this@ClientConnectTask, "与服务端连接的过程中抛出了异常")
             e.printStackTrace()
         }
     }
@@ -56,7 +58,7 @@ class ClientConnectTask(
     override fun doCancel() {
         try {
             bluetoothSocket?.close()
-            LogUtils.e(this, "($name)关闭过程中抛出了异常")
+            LogUtils.e(this@ClientConnectTask, "关闭过程中抛出了异常")
         } catch (e: Exception) {
             e.printStackTrace()
         }

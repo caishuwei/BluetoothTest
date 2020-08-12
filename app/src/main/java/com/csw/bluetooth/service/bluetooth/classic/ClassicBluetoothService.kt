@@ -13,6 +13,7 @@ import android.os.IBinder
 import androidx.core.content.ContextCompat
 import com.csw.bluetooth.IClassicBluetoothInterface
 import com.csw.bluetooth.app.MyApplication
+import com.csw.bluetooth.service.bluetooth.ConnectState
 import com.csw.bluetooth.service.bluetooth.classic.connect.base.ConnectedDeviceHelper
 import com.csw.bluetooth.service.bluetooth.classic.connect.message.IMessage
 import com.csw.bluetooth.service.bluetooth.classic.connect.message.TextMessage
@@ -34,6 +35,7 @@ class ClassicBluetoothService : Service() {
         const val ACTION_DEVICES_CHANGED = "ACTION_DEVICES_CHANGED"
         const val ACTION_DEVICE_STATE_CHANGED = "ACTION_DEVICE_STATE_CHANGED"
         const val ACTION_DEVICE_CONNECT_STATE_CHANGED = "ACTION_DEVICE_CONNECT_STATE_CHANGED"
+        const val EXTRA_DEVICE_CONNECT_STATE = "EXTRA_DEVICE_CONNECT_STATE"
         private const val ACTION_BEGIN_DISCOVERY = "ACTION_BEGIN_DISCOVERY"
         private const val ACTION_CANCEL_DISCOVERY = "ACTION_CANCEL_DISCOVERY"
 
@@ -87,6 +89,10 @@ class ClassicBluetoothService : Service() {
                                 startDiscoveryWhenBluetoothOpen = false
                                 //当前界面处于前台，开始扫描
                                 myClassicBluetoothImpl.startDiscovery()
+                            } else {
+                                if (connectedDeviceHelper == null && connectTask == null) {
+                                    startServerConnectTask()
+                                }
                             }
                         }
                         BluetoothAdapter.STATE_TURNING_OFF -> {
@@ -149,17 +155,17 @@ class ClassicBluetoothService : Service() {
 
         updateBondedDevices()
         sendBroadcast(Intent(ACTION_DEVICES_CHANGED))
-
-        startServerConnectTask()
     }
 
     private fun startServerConnectTask() {
         bluetoothAdapter?.let { adapter ->
-            connectTask?.cancel()
-            connectTask = ServerConnectTask.getSPPServerConnectTask(this, adapter)
-                .apply {
-                    connect()
-                }
+            if (adapter.isEnabled) {
+                connectTask?.cancel()
+                connectTask = ServerConnectTask.getSPPServerConnectTask(this, adapter)
+                    .apply {
+                        connect()
+                    }
+            }
         }
     }
 
@@ -214,13 +220,32 @@ class ClassicBluetoothService : Service() {
     }
 
     fun onDeviceConnected(connectedDeviceHelper: ConnectedDeviceHelper) {
+        LogUtils.d(
+            this,
+            "onDeviceConnected ${connectedDeviceHelper.getConnectDevice().getDisplayName()}"
+        )
+        sendBroadcast(Intent(ACTION_DEVICE_CONNECT_STATE_CHANGED).apply {
+            putExtra(EXTRA_DEVICE_CONNECT_STATE, ConnectState.STATE_ONLINE.name)
+            putExtra(BluetoothDevice.EXTRA_DEVICE, connectedDeviceHelper.getConnectDevice())
+        })
         this.connectedDeviceHelper?.close()
         this.connectedDeviceHelper = connectedDeviceHelper
     }
 
     fun onDeviceDisconnect(connectedDeviceHelper: ConnectedDeviceHelper) {
+        LogUtils.d(
+            this,
+            "onDeviceDisconnect ${connectedDeviceHelper.getConnectDevice().getDisplayName()}"
+        )
+        sendBroadcast(Intent(ACTION_DEVICE_CONNECT_STATE_CHANGED).apply {
+            putExtra(EXTRA_DEVICE_CONNECT_STATE, ConnectState.STATE_OFFLINE.name)
+            putExtra(BluetoothDevice.EXTRA_DEVICE, connectedDeviceHelper.getConnectDevice())
+        })
         if (this.connectedDeviceHelper == connectedDeviceHelper) {
             this.connectedDeviceHelper = null
+            if (connectTask == null) {
+                startServerConnectTask()
+            }
         }
     }
 
@@ -277,14 +302,25 @@ class ClassicBluetoothService : Service() {
             }
             bluetoothDevice?.run {
                 //关闭已连接设备
-                connectedDeviceHelper?.close()
+                val oldConnect = connectedDeviceHelper
                 //取消正在连接的任务
-                connectTask?.cancel()
+                val oldTask = connectTask
                 //开始一个新的连接任务连接到该设备
                 connectTask = ClientConnectTask.getSPPClientConnectTask(
                     this@ClassicBluetoothService,
                     this
-                ).apply { connect() }
+                ).apply {
+                    connect()
+                    sendBroadcast(Intent(ACTION_DEVICE_CONNECT_STATE_CHANGED).apply {
+                        putExtra(EXTRA_DEVICE_CONNECT_STATE, ConnectState.STATE_CONNECTING.name)
+                        putExtra(
+                            BluetoothDevice.EXTRA_DEVICE,
+                            bluetoothDevice
+                        )
+                    })
+                }
+                oldTask?.cancel()
+                oldConnect?.close()
             }
         }
 

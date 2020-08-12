@@ -4,6 +4,7 @@ package com.csw.quickmvp
 
 import android.app.Application
 import android.content.Context
+import com.csw.quickmvp.log.LogDisplayController
 
 class SDK {
 
@@ -15,6 +16,11 @@ class SDK {
          */
         fun init(application: Application?) {
             this.application = application
+            application?.run {
+                if (LogDisplayController.ENABLE) {
+                    LogDisplayController.instance.init(this)
+                }
+            }
         }
 
         fun getApplication(): Application {
