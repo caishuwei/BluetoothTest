@@ -150,5 +150,15 @@ ext {
              */
             coroutines_android           : "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.8-1.4.0-rc",
 
+            /**
+             * room数据库
+             */
+            room_runtime                 : "androidx.room:room-runtime:2.2.5",
+            room_compiler                : "androidx.room:room-compiler:2.2.5",
+            room_ktx                     : "androidx.room:room-ktx:2.2.5",
+            room_rxjava2                 : "androidx.room:room-rxjava2:2.2.5",
+            room_guava                   : "androidx.room:room-guava:2.2.5",
+            //testImplementation
+            room_testing                 : "androidx.room:room-testing:2.2.5",
     ]
 }

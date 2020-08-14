@@ -58,4 +58,11 @@ dependencies {
     /*依赖包加了，这里还是要加，不然不会在编译时解析注解自动生成代码*/
     kapt rootProject.ext.others.dagger2_android_processor
     kapt rootProject.ext.others.dagger2_compiler
+
+    implementation rootProject.ext.others.room_runtime
+    kapt rootProject.ext.others.room_compiler
+    implementation rootProject.ext.others.room_ktx
+    implementation rootProject.ext.others.room_rxjava2
+    implementation rootProject.ext.others.room_guava
+    testImplementation rootProject.ext.others.room_testing
 }
