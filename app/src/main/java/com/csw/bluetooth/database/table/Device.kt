@@ -1,4 +1,4 @@
-package com.csw.bluetooth.entities.db.table
+package com.csw.bluetooth.database.table
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

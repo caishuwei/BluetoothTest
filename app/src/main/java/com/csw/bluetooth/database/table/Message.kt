@@ -1,9 +1,11 @@
-package com.csw.bluetooth.entities.db.table
+package com.csw.bluetooth.database.table
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.csw.bluetooth.entities.MessageState
+import com.csw.bluetooth.entities.MessageType
 
 /**
  * data class Kotlin数据类，不能被继承，不能是抽象的,
@@ -30,6 +32,37 @@ data class Message(
     val messageId: String,//消息id
     @ColumnInfo(name = "createTime")
     val createTime: Long,//消息创建时间
+
+    /**
+     * 消息类型
+     * 该字段使用枚举MessageType的name属性
+     * @see com.csw.bluetooth.entities.MessageType
+     */
+    @ColumnInfo(name = "type")
+    val type: String,
+    /**
+     * 消息状态
+     * 该字段使用枚举MessageState的name属性
+     * @see com.csw.bluetooth.entities.MessageState
+     */
+    @ColumnInfo(name = "state")
+    var state: String,
+
     @ColumnInfo(name = "deviceId")
     val deviceId: Long//设备的id
-)
+) {
+
+    /**
+     * 获取消息类型
+     */
+    fun getMessageType(): MessageType {
+        return MessageType.valueOf(type)
+    }
+
+    /**
+     * 获取消息状态
+     */
+    fun getMessageState(): MessageState {
+        return MessageState.valueOf(state)
+    }
+}

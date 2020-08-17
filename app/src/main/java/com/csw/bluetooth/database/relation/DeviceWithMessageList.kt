@@ -1,9 +1,9 @@
-package com.csw.bluetooth.entities.db.relation
+package com.csw.bluetooth.database.relation
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import com.csw.bluetooth.entities.db.table.Device
-import com.csw.bluetooth.entities.db.table.Message
+import com.csw.bluetooth.database.table.Device
+import com.csw.bluetooth.database.table.Message
 
 /**
  * 这个包主要用于定义表与表之间的关系，关联查询

@@ -1,6 +1,7 @@
 package com.csw.bluetooth.app
 
 import android.app.Application
+import androidx.room.Room
 import com.csw.quickmvp.SDK
 import javax.inject.Inject
 
