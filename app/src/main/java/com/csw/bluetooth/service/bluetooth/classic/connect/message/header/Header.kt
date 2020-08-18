@@ -2,6 +2,10 @@ package com.csw.bluetooth.service.bluetooth.classic.connect.message.header
 
 open class Header(val name: String) {
 
+    object HeaderStart : Header("header-start") {
+        val DESC = "头开始位置"
+    }
+
     /**
      * 常见的媒体格式类型如下：
      * text/html ： HTML格式
@@ -30,17 +34,27 @@ open class Header(val name: String) {
     }
 
     /**
-     * body字节长度
+     * body字节长度（Long）
      */
     object ContentLength : Header("content-length")
 
     /**
-     * 消息创建时间，毫秒级时间戳
+     * 消息创建时间，毫秒级时间戳（Long）
      */
     object MessageCreateTime : Header("message-create-time")
 
+    /**
+     * 消息ID
+     */
+    object MessageID : Header("message-id")
 
-    object HeaderStart : Header("header-start") {
-        val DESC = "头开始位置"
-    }
+    /**
+     * 消息来自（value=device.address）
+     */
+    object MessageFrom : Header("message-from")
+
+    /**
+     * 消息发往（value=device.address）
+     */
+    object MessageTo : Header("message-to")
 }

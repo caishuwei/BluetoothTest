@@ -1,16 +1,20 @@
-package com.csw.bluetooth.ui.room
+package com.csw.bluetooth.ui.chat
 
 import android.app.Activity
 import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.csw.bluetooth.R
 import com.csw.bluetooth.app.MyApplication
+import com.csw.bluetooth.entities.MessageItem
 import com.csw.bluetooth.service.bluetooth.ConnectState
 import com.csw.quickmvp.mvp.ui.BaseMVPActivity
+import com.csw.quickmvp.utils.SpaceLineDecoration
 import kotlinx.android.synthetic.main.activity_chat.*
 import kotlinx.android.synthetic.main.view_chat_input.*
 
@@ -40,6 +44,15 @@ class ChatActivity : BaseMVPActivity<ChatContract.Presenter>(), ChatContract.Vie
 
     override fun initView(rootView: View, savedInstanceState: Bundle?) {
         super.initView(rootView, savedInstanceState)
+        recyclerView?.run {
+            layoutManager = LinearLayoutManager(context)
+            addItemDecoration(SpaceLineDecoration.getInstanceByDp(10,10,10,10, Color.TRANSPARENT))
+        }
+    }
+
+    override fun initAdapter() {
+        super.initAdapter()
+
     }
 
     override fun initListener() {
@@ -105,5 +118,9 @@ class ChatActivity : BaseMVPActivity<ChatContract.Presenter>(), ChatContract.Vie
                 }
             }
         }
+    }
+
+    override fun updateMessageList(messageItemList: List<MessageItem>) {
+
     }
 }

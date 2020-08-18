@@ -4,8 +4,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.csw.bluetooth.entities.MessageState
-import com.csw.bluetooth.entities.MessageType
+import com.csw.bluetooth.database.values.MessageState
+import com.csw.bluetooth.database.values.MessageType
 
 /**
  * data class Kotlin数据类，不能被继承，不能是抽象的,
@@ -48,8 +48,12 @@ data class Message(
     @ColumnInfo(name = "state")
     var state: String,
 
-    @ColumnInfo(name = "deviceId")
-    val deviceId: Long//设备的id
+    //发送设备的地址
+    @ColumnInfo(name = "from")
+    val from: String,
+    //接收设备的地址
+    @ColumnInfo(name = "to")
+    val to: String
 ) {
 
     /**

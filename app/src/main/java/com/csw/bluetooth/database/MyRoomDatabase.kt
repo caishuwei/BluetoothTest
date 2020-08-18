@@ -40,7 +40,7 @@ abstract class MyRoomDatabase : RoomDatabase() {
                     migration_1_2//添加版本升级处理，这里以1到2为例子
                 )
                 .fallbackToDestructiveMigration()//数据库升级失败时重新创建数据库
-//                .allowMainThreadQueries()//允许主线程查询
+                .allowMainThreadQueries()//允许主线程查询，但为了主线程流程，大数据量的查询还是应该放在子线程
                 .build()
         }
 

@@ -1,5 +1,5 @@
 @file:Suppress("unused", "MemberVisibilityCanBePrivate", "RedundantOverride")
-package com.csw.bluetooth.ui.room
+package com.csw.bluetooth.ui.chat
 
 import com.csw.quickmvp.mvp.base.LifecycleCallback
 import com.csw.quickmvp.mvp.base.PresenterSingleton

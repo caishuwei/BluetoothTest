@@ -1,5 +1,8 @@
 package com.csw.bluetooth.service.bluetooth.classic.connect.message
 
+import com.csw.bluetooth.database.DBUtils
+import com.csw.bluetooth.database.table.Message
+import com.csw.bluetooth.database.values.MessageType
 import com.csw.bluetooth.service.bluetooth.classic.connect.message.header.Header
 import java.io.InputStream
 import java.util.*
@@ -43,26 +46,30 @@ class MessageFactory {
                     }
                 }
             }
-            //解析头，取得body长度
-            headerMap[Header.ContentLength.name]?.run {
-                val bodySize = try {
-                    this.toInt()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    0
-                }
-                if (bodySize > 0) {
-                    //取得body
-                    val bodyData = ByteArray(bodySize)
-                    inputStream.read(bodyData)
-                    //获取内容类型生成对应实例
-                    headerMap[Header.ContentType.name]?.run {
-                        when (this) {
-                            Header.ContentType.TYPE_JSON -> {
-                                return TextMessage(String(bodyData))
-                            }
-                            else -> {
-
+            headerMap[Header.MessageID.name]?.let { messgeId ->
+                //解析头，取得body长度
+                headerMap[Header.ContentLength.name]?.let { contentLength ->
+                    val bodySize = try {
+                        contentLength.toInt()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        0
+                    }
+                    if (bodySize > 0) {
+                        //取得body
+                        val bodyData = ByteArray(bodySize)
+                        inputStream.read(bodyData)
+                        //获取内容类型生成对应实例
+                        headerMap[Header.ContentType.name]?.let { contentType ->
+                            return when (contentType) {
+                                Header.ContentType.TYPE_JSON -> {
+                                    TextMessage(messgeId, String(bodyData))
+                                }
+                                else -> {
+                                    null
+                                }
+                            }?.apply {
+                                setHeaders(headerMap)
                             }
                         }
                     }
@@ -70,6 +77,21 @@ class MessageFactory {
             }
             return null
         }
+
+        fun dbMessageToMessage(message: Message): IMessage? {
+            return when (message.getMessageType()) {
+                MessageType.TEXT -> {
+                    val textData = DBUtils.getTextMessageData(message.messageId)
+                    val text = textData?.text ?: ""
+                    TextMessage(message.messageId, text)
+                }
+                else -> null
+            }?.apply {
+                setFrom(message.from)
+                setTo(message.to)
+            }
+        }
+
     }
 
 }

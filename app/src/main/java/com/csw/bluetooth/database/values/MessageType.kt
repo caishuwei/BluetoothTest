@@ -1,4 +1,4 @@
-package com.csw.bluetooth.entities
+package com.csw.bluetooth.database.values
 
 /**
  * 消息类型

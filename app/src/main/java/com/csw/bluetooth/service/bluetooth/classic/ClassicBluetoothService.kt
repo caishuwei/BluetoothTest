@@ -13,6 +13,7 @@ import android.os.IBinder
 import androidx.core.content.ContextCompat
 import com.csw.bluetooth.IClassicBluetoothInterface
 import com.csw.bluetooth.app.MyApplication
+import com.csw.bluetooth.database.DBUtils
 import com.csw.bluetooth.service.bluetooth.ConnectState
 import com.csw.bluetooth.service.bluetooth.classic.connect.base.ConnectedDeviceHelper
 import com.csw.bluetooth.service.bluetooth.classic.connect.message.IMessage
@@ -22,6 +23,7 @@ import com.csw.bluetooth.service.bluetooth.classic.connect.task.ICancelableConne
 import com.csw.bluetooth.service.bluetooth.classic.connect.task.ServerConnectTask
 import com.csw.bluetooth.utils.getDisplayName
 import com.csw.quickmvp.utils.LogUtils
+import com.csw.quickmvp.utils.Utils
 import javax.inject.Inject
 
 /**
@@ -334,9 +336,20 @@ class ClassicBluetoothService : Service() {
 
         override fun sendTextToDevice(bluetoothDevice: BluetoothDevice?, msg: String?): Boolean {
             if (bluetoothDevice != null && msg != null) {
+                val from = bluetoothAdapter?.address
+                val to = bluetoothDevice.address
+                val id = Utils.generateId()
+                if (from == null) {
+                    return false
+                }
                 connectedDeviceHelper?.run {
                     if (getConnectDevice() == bluetoothDevice) {
-                        return write(TextMessage(msg))
+                        val iMessage = TextMessage(id, msg).apply {
+                            setFrom(from)
+                            setTo(to)
+                        }
+                        DBUtils.insertMessage(iMessage)
+                        return write(iMessage)
                     }
                 }
             }

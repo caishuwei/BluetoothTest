@@ -4,6 +4,8 @@ package com.csw.bluetooth.service.bluetooth.classic.connect.base
 
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
+import com.csw.bluetooth.database.DBUtils
+import com.csw.bluetooth.database.values.MessageState
 import com.csw.bluetooth.service.bluetooth.classic.ClassicBluetoothService
 import com.csw.bluetooth.service.bluetooth.classic.connect.message.IMessage
 import com.csw.bluetooth.service.bluetooth.classic.connect.message.MessageFactory
@@ -43,6 +45,8 @@ class ConnectedDeviceHelper(
             try {
                 bluetoothSocket.inputStream.run {
                     MessageFactory.instanceFromInputStream(this)?.let {
+                        DBUtils.insertMessage(it)
+                        DBUtils.updateMessageState(it.getMessageId(), MessageState.RECEIVED)
                         classicBluetoothService.onNewMessage(getConnectDevice(), it)
                     }
                 }
@@ -54,13 +58,29 @@ class ConnectedDeviceHelper(
     }
 
     fun write(message: IMessage): Boolean {
+        DBUtils.updateMessageState(
+            message.getMessageId(),
+            MessageState.WAITING
+        )
         writeThread.handlerProxy.post {
             try {
+                DBUtils.updateMessageState(
+                    message.getMessageId(),
+                    MessageState.SENDING
+                )
                 bluetoothSocket.outputStream.run {
                     message.write(this)
                     flush()
                 }
+                DBUtils.updateMessageState(
+                    message.getMessageId(),
+                    MessageState.SENT
+                )
             } catch (e: Exception) {
+                DBUtils.updateMessageState(
+                    message.getMessageId(),
+                    MessageState.SEND_FAIL
+                )
                 e.printStackTrace()
                 close()
             }

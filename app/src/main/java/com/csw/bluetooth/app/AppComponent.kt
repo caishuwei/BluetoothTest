@@ -2,8 +2,9 @@ package com.csw.bluetooth.app
 
 import android.app.Application
 import android.content.Context
+import com.csw.bluetooth.database.MyRoomDatabase
 import com.csw.bluetooth.service.bluetooth.classic.ClassicBluetoothService
-import com.csw.bluetooth.ui.room.ChatComponent
+import com.csw.bluetooth.ui.chat.ChatComponent
 import com.csw.bluetooth.ui.scan.ScanDeviceComponent
 import com.csw.quickmvp.mvp.base.AppSingleton
 import dagger.BindsInstance
@@ -63,4 +64,9 @@ class AppModule {
         return application
     }
 
+    @AppSingleton
+    @Provides
+    fun getMyRoomDatabase(application: Application): MyRoomDatabase {
+        return MyRoomDatabase.getInstance(application)
+    }
 }

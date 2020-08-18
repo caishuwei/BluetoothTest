@@ -16,7 +16,7 @@ import com.csw.bluetooth.R
 import com.csw.bluetooth.app.MyApplication
 import com.csw.bluetooth.entities.BluetoothDeviceWrap
 import com.csw.bluetooth.entities.DevicesGroup
-import com.csw.bluetooth.ui.room.ChatActivity
+import com.csw.bluetooth.ui.chat.ChatActivity
 import com.csw.quickmvp.mvp.ui.BaseMVPActivity
 import com.csw.quickmvp.utils.SpaceLineDecoration
 import com.csw.quickmvp.utils.ToastUtils

@@ -15,10 +15,10 @@ data class DeviceWithMessageList(
     @Embedded
     val device: Device,
 
-    //@Relation 定义两个表的关系 Device.id->Message.deviceId
+    //@Relation 定义两个表的关系 Device.address->Message.from
     @Relation(
-        parentColumn = "id",
-        entityColumn = "deviceId"
+        parentColumn = "address",
+        entityColumn = "from"
     )
     val messageList: List<Message>
 )

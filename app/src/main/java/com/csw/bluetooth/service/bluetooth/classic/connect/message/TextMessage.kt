@@ -3,7 +3,7 @@ package com.csw.bluetooth.service.bluetooth.classic.connect.message
 import com.csw.bluetooth.service.bluetooth.classic.connect.message.header.Header
 import java.io.OutputStream
 
-class TextMessage(val text: String) : BaseMessage() {
+class TextMessage(id: String, val text: String) : BaseMessage(id) {
 
     init {
         headers[Header.ContentType.name] = Header.ContentType.TYPE_JSON

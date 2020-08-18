@@ -34,7 +34,7 @@
             android:configChanges="screenSize|layoutDirection|orientation" />
 
         <activity
-            android:name=".ui.room.ChatActivity"
+            android:name=".ui.chat.ChatActivity"
             android:configChanges="screenSize|layoutDirection|orientation" />
 
         <service

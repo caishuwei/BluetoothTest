@@ -22,4 +22,35 @@ interface IMessage {
      * 获取头信息
      */
     fun getHeader(headerKey: String): String?
+
+    /**
+     * 设置头信息
+     */
+    fun setHeaders(headerMap: Map<String, String>)
+
+
+    //参数------------------------------------------------------------------------------------------
+    /**
+     * 消息id
+     */
+    fun setMessageId(messageId: String)
+    fun getMessageId(): String
+
+    /**
+     * 消息创建时间
+     */
+    fun setMessageCreateTime(time: Long)
+    fun getMessageCreateTime(): Long
+
+    /**
+     * 消息来自哪个设备（address）
+     */
+    fun setFrom(from: String)
+    fun getFrom(): String?
+
+    /**
+     * 消息发往哪个设备（address）
+     */
+    fun setTo(to: String)
+    fun getTo(): String?
 }
