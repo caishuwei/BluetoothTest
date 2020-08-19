@@ -5,6 +5,7 @@ import com.csw.bluetooth.database.table.Message
 import com.csw.bluetooth.database.values.MessageType
 import com.csw.bluetooth.service.bluetooth.classic.connect.message.header.Header
 import java.io.InputStream
+import java.net.URLDecoder
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -42,7 +43,7 @@ class MessageFactory {
             for (kv in headerKVS) {
                 kv.split(IMessage.HEADER_KEY_VALUE_SPACE).run {
                     if (size == 2) {
-                        headerMap[get(0)] = get(1)
+                        headerMap[get(0)] = URLDecoder.decode(get(1),"UTF-8")
                     }
                 }
             }

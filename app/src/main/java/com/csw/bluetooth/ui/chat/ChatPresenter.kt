@@ -68,7 +68,7 @@ class ChatPresenter @Inject constructor(
                         if (from == client || to == client) {
                             //来自聊天对象消息，发送给聊天对象的消息
                             when (getMessageState()) {
-                                MessageState.NONE, MessageState.RECEIVED -> {
+                                MessageState.CREATED -> {
                                     //新增讯息
                                     messageItemList.add(MessageItem(this, this.to == client))
                                     view.updateMessageList(messageItemList)

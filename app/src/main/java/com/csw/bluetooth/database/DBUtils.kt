@@ -46,7 +46,7 @@ object DBUtils {
                 messageId,
                 createTime,
                 name,
-                MessageState.NONE.name,
+                MessageState.CREATED.name,
                 from,
                 to
             ).run {

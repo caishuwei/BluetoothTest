@@ -4,6 +4,7 @@ package com.csw.bluetooth.service.bluetooth.classic.connect.message
 
 import com.csw.bluetooth.service.bluetooth.classic.connect.message.header.Header
 import java.io.OutputStream
+import java.net.URLEncoder
 
 /**
  * 消息基类，设置头部信息
@@ -29,7 +30,12 @@ abstract class BaseMessage(id: String) : IMessage {
     private fun writeHeaders(outputStream: OutputStream) {
         val sb = StringBuilder()
         for (e in headers.entries) {
-            sb.append("${e.key}${IMessage.HEADER_KEY_VALUE_SPACE}${e.value}${IMessage.HEADER_SPACE}")
+            sb.append(
+                "${e.key}${IMessage.HEADER_KEY_VALUE_SPACE}${URLEncoder.encode(
+                    e.value,
+                    "UTF-8"
+                )}${IMessage.HEADER_SPACE}"
+            )
         }
         sb.append(IMessage.HEADER_SPACE)
         outputStream.write(sb.toString().toByteArray())

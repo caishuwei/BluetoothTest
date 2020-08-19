@@ -5,7 +5,10 @@ import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.view.View
 import android.widget.ImageView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -31,6 +34,8 @@ class ChatActivity : BaseMVPActivity<ChatContract.Presenter>(), ChatContract.Vie
         }
     }
 
+    private var adapter: ChatAdapter? = null
+
     override fun initInject() {
         super.initInject()
         MyApplication.instance.appComponent.getChatComponentBuilder().setView(this)
@@ -46,13 +51,23 @@ class ChatActivity : BaseMVPActivity<ChatContract.Presenter>(), ChatContract.Vie
         super.initView(rootView, savedInstanceState)
         recyclerView?.run {
             layoutManager = LinearLayoutManager(context)
-            addItemDecoration(SpaceLineDecoration.getInstanceByDp(10,10,10,10, Color.TRANSPARENT))
+            addItemDecoration(
+                SpaceLineDecoration.getInstanceByDp(
+                    10,
+                    10,
+                    10,
+                    10,
+                    Color.TRANSPARENT
+                )
+            )
         }
     }
 
     override fun initAdapter() {
         super.initAdapter()
-
+        adapter = ChatAdapter()?.apply {
+            recyclerView?.adapter = this
+        }
     }
 
     override fun initListener() {
@@ -94,6 +109,7 @@ class ChatActivity : BaseMVPActivity<ChatContract.Presenter>(), ChatContract.Vie
 
     override fun setTitle(displayName: String?) {
         toolbar?.title = displayName
+
     }
 
     override fun setConnectState(stateConnecting: ConnectState) {
@@ -121,6 +137,7 @@ class ChatActivity : BaseMVPActivity<ChatContract.Presenter>(), ChatContract.Vie
     }
 
     override fun updateMessageList(messageItemList: List<MessageItem>) {
+        adapter?.setNewData(messageItemList)
 
     }
 }

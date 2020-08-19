@@ -18,7 +18,7 @@ class MessageItem(message: Message, isSendMessage: Boolean) : MultiItemEntity {
     }
 
     var message = message
-    val itemType1 = when (message.getMessageType()) {
+    private val itemType1 = when (message.getMessageType()) {
         MessageType.TEXT -> {
             if (isSendMessage) {
                 SEND_TEXT

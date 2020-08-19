@@ -7,7 +7,7 @@ enum class MessageState {
     /**
      * 初始状态，未发送
      */
-    NONE,
+    CREATED,
 
     /**
      * 等待发送中
