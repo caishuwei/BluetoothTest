@@ -3,6 +3,7 @@ package com.csw.bluetooth.app
 import android.app.Application
 import android.content.Context
 import com.csw.bluetooth.database.MyRoomDatabase
+import com.csw.bluetooth.model.ExternalFileDataCache
 import com.csw.bluetooth.service.bluetooth.classic.ClassicBluetoothService
 import com.csw.bluetooth.ui.chat.ChatComponent
 import com.csw.bluetooth.ui.scan.ScanDeviceComponent
@@ -11,6 +12,7 @@ import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 import dagger.Provides
+import javax.inject.Named
 
 @AppSingleton
 @Component(modules = [AppModule::class])
@@ -68,5 +70,18 @@ class AppModule {
     @Provides
     fun getMyRoomDatabase(application: Application): MyRoomDatabase {
         return MyRoomDatabase.getInstance(application)
+    }
+
+    /**
+     * @Named 注解用于区分相同返回类型的Provides，在注入的地方也使用这个注解，即可注入这个Provides提供的实例
+     *
+     * 比如返回值是一个字符串的话，同个module有存在多个provides都提供了返回字符串，则可以通过这个注解来区分到
+     * 底需要哪个字符串
+     */
+    @Named("App")
+    @AppSingleton
+    @Provides
+    fun getExternalFileDataCache(externalFileDataCache: ExternalFileDataCache): ExternalFileDataCache {
+        return externalFileDataCache
     }
 }

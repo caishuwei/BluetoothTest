@@ -1,14 +1,15 @@
 package com.csw.bluetooth.ui.main
 
 import android.Manifest
+import android.content.pm.PackageManager
+import androidx.core.app.ActivityCompat
 import com.csw.bluetooth.R
+import com.csw.bluetooth.model.ExternalFileDataCache
 import com.csw.bluetooth.ui.scan.ScanDeviceActivity
 import com.csw.quickmvp.mvp.ui.BaseActivity
-import com.csw.quickmvp.utils.ExternalFileHelper
-import com.csw.quickmvp.utils.Utils
+import com.csw.quickmvp.utils.LogUtils
 import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.activity_main.*
-import java.io.FileOutputStream
 
 class MainActivity : BaseActivity() {
 
@@ -30,16 +31,17 @@ class MainActivity : BaseActivity() {
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         ).subscribe {
             if (it) {
-                val id = Utils.generateId()
-                val fileName = "fileTest.txt"
-                ExternalFileHelper.createFile(fileName)
-                ExternalFileHelper.deleteFile(fileName)
-                ExternalFileHelper.openFile(fileName)?.run {
-                    FileOutputStream(this).use {
-                        it.write(id.toByteArray())
-                        it.flush()
-                    }
+                if (ActivityCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                    ) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    return@subscribe
                 }
+                LogUtils.d(this, ExternalFileDataCache().getDeviceId())
             }
         }.run {
             addLifecycleTask(this)
