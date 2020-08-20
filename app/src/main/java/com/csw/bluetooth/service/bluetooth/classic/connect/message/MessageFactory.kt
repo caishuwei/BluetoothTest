@@ -43,7 +43,7 @@ class MessageFactory {
             for (kv in headerKVS) {
                 kv.split(IMessage.HEADER_KEY_VALUE_SPACE).run {
                     if (size == 2) {
-                        headerMap[get(0)] = URLDecoder.decode(get(1),"UTF-8")
+                        headerMap[get(0)] = URLDecoder.decode(get(1), "UTF-8")
                     }
                 }
             }
@@ -56,22 +56,25 @@ class MessageFactory {
                         e.printStackTrace()
                         0
                     }
-                    if (bodySize > 0) {
+                    val body = if (bodySize > 0) {
                         //取得body
                         val bodyData = ByteArray(bodySize)
                         inputStream.read(bodyData)
-                        //获取内容类型生成对应实例
-                        headerMap[Header.ContentType.name]?.let { contentType ->
-                            return when (contentType) {
-                                Header.ContentType.TYPE_JSON -> {
-                                    TextMessage(messgeId, String(bodyData))
-                                }
-                                else -> {
-                                    null
-                                }
-                            }?.apply {
-                                setHeaders(headerMap)
+                        bodyData
+                    } else {
+                        null
+                    }
+                    //获取内容类型生成对应实例
+                    headerMap[Header.ContentType.name]?.let { contentType ->
+                        return when (contentType) {
+                            Header.ContentType.TYPE_TEXT -> {
+                                TextMessage(messgeId, String(body ?: ByteArray(0)))
                             }
+                            else -> {
+                                null
+                            }
+                        }?.apply {
+                            setHeaders(headerMap)
                         }
                     }
                 }

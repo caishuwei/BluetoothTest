@@ -4,7 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import com.csw.bluetooth.R
-import com.csw.bluetooth.model.ExternalFileDataCache
+import com.csw.bluetooth.model.cache.ExternalFileDataCache
 import com.csw.bluetooth.ui.scan.ScanDeviceActivity
 import com.csw.quickmvp.mvp.ui.BaseActivity
 import com.csw.quickmvp.utils.LogUtils
@@ -41,7 +41,8 @@ class MainActivity : BaseActivity() {
                 ) {
                     return@subscribe
                 }
-                LogUtils.d(this, ExternalFileDataCache().getDeviceId())
+                LogUtils.d(this, ExternalFileDataCache()
+                    .getDeviceId())
             }
         }.run {
             addLifecycleTask(this)

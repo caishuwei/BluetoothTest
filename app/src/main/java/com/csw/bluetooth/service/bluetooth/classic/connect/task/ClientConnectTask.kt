@@ -12,6 +12,7 @@ import java.util.*
  * 客户端连接任务
  */
 class ClientConnectTask(
+    private val myDeviceAddress: String,
     private val classicBluetoothService: ClassicBluetoothService,
     private val bluetoothDevice: BluetoothDevice,
     private val uuid: UUID,
@@ -21,10 +22,12 @@ class ClientConnectTask(
     companion object {
 
         fun getSPPClientConnectTask(
+            myDeviceAddress: String,
             classicBluetoothService: ClassicBluetoothService,
             bluetoothDevice: BluetoothDevice
         ): ClientConnectTask {
             return ClientConnectTask(
+                myDeviceAddress,
                 classicBluetoothService,
                 bluetoothDevice,
                 Constants.SPP_UUID,
@@ -44,6 +47,7 @@ class ClientConnectTask(
                 connect()
                 classicBluetoothService.onDeviceConnected(
                     ConnectedDeviceHelper(
+                        myDeviceAddress,
                         classicBluetoothService,
                         this
                     )

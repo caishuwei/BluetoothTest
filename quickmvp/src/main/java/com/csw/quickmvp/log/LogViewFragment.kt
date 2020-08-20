@@ -9,6 +9,9 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.RelativeLayout
+import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -41,6 +44,12 @@ class LogViewFragment : Fragment() {
                 logAdapter?.notifyDataSetChanged()
             }
         container?.run {
+            val relativeLayout = RelativeLayout(context)
+            relativeLayout.layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+            //日志列表
             logListView = NoTouchRecyclerView(context).apply {
                 setPadding(0, ScreenInfo.dp2Px(20f), 0, 0)
                 setLayoutManager(LinearLayoutManager(context, RecyclerView.VERTICAL, false))
@@ -52,8 +61,54 @@ class LogViewFragment : Fragment() {
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
             }
+            relativeLayout.addView(logListView)
+
+            val dp5 = ScreenInfo.dp2Px(5f)
+            val dp10 = ScreenInfo.dp2Px(10f)
+            //日志按钮
+            val cardView = CardView(context).apply {
+                radius = dp5.toFloat()
+                elevation = dp10.toFloat()
+            }
+            relativeLayout.addView(
+                cardView,
+                RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                    RelativeLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    addRule(RelativeLayout.ALIGN_PARENT_END)
+                    addRule(RelativeLayout.CENTER_VERTICAL)
+                    marginEnd = dp10
+                }
+            )
+
+            val imageView = ImageView(context).apply {
+                adjustViewBounds = true
+                scaleType = ImageView.ScaleType.CENTER_INSIDE
+                setPadding(dp5, dp5, dp5, dp5)
+                setImageResource(R.drawable.quick_mvp_svg_ic_logs_enable)
+                setOnClickListener {
+                    logListView?.let { recyclerView ->
+                        if (recyclerView.visibility == View.VISIBLE) {
+                            recyclerView.visibility = View.GONE
+                            setImageResource(R.drawable.quick_mvp_svg_ic_logs_disable)
+                        } else {
+                            recyclerView.visibility = View.VISIBLE
+                            setImageResource(R.drawable.quick_mvp_svg_ic_logs_enable)
+                        }
+                    }
+                }
+            }
+            cardView.addView(
+                imageView, ViewGroup.LayoutParams(
+                    ScreenInfo.dp2Px(40f),
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+            )
+
+            return relativeLayout
         }
-        return logListView
+        return null
     }
 
     override fun onResume() {
@@ -102,8 +157,8 @@ class LogViewFragment : Fragment() {
                     Color.WHITE
                 }
             }
-            helper.setTextColor(R.id.tv_time,color)
-            helper.setTextColor(R.id.tv_log,color)
+            helper.setTextColor(R.id.tv_time, color)
+            helper.setTextColor(R.id.tv_log, color)
             helper.setText(R.id.tv_time, item.getTime())
             helper.setText(R.id.tv_log, item.getContent())
         }

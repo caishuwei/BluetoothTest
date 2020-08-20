@@ -38,7 +38,8 @@
 
         <activity
             android:name=".ui.chat.ChatActivity"
-            android:configChanges="screenSize|layoutDirection|orientation" />
+            android:configChanges="screenSize|layoutDirection|orientation"
+            android:windowSoftInputMode="adjustResize"/>
 
         <service
             android:name=".service.bluetooth.classic.ClassicBluetoothService"

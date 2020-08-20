@@ -14,7 +14,6 @@ import androidx.core.content.ContextCompat
 import com.csw.bluetooth.IClassicBluetoothInterface
 import com.csw.bluetooth.app.MyApplication
 import com.csw.bluetooth.database.DBUtils
-import com.csw.bluetooth.model.ExternalFileDataCache
 import com.csw.bluetooth.service.bluetooth.ConnectState
 import com.csw.bluetooth.service.bluetooth.classic.connect.base.ConnectedDeviceHelper
 import com.csw.bluetooth.service.bluetooth.classic.connect.message.IMessage
@@ -303,27 +302,30 @@ class ClassicBluetoothService : Service() {
                 //设备正在连接
                 return
             }
-            bluetoothDevice?.run {
-                //关闭已连接设备
-                val oldConnect = connectedDeviceHelper
-                //取消正在连接的任务
-                val oldTask = connectTask
-                //开始一个新的连接任务连接到该设备
-                connectTask = ClientConnectTask.getSPPClientConnectTask(
-                    this@ClassicBluetoothService,
-                    this
-                ).apply {
-                    connect()
-                    sendBroadcast(Intent(ACTION_DEVICE_CONNECT_STATE_CHANGED).apply {
-                        putExtra(EXTRA_DEVICE_CONNECT_STATE, ConnectState.STATE_CONNECTING.name)
-                        putExtra(
-                            BluetoothDevice.EXTRA_DEVICE,
-                            bluetoothDevice
-                        )
-                    })
+            bluetoothAdapter?.address?.let { mDeviceAddress ->
+                bluetoothDevice?.run {
+                    //关闭已连接设备
+                    val oldConnect = connectedDeviceHelper
+                    //取消正在连接的任务
+                    val oldTask = connectTask
+                    //开始一个新的连接任务连接到该设备
+                    connectTask = ClientConnectTask.getSPPClientConnectTask(
+                        mDeviceAddress,
+                        this@ClassicBluetoothService,
+                        this
+                    ).apply {
+                        connect()
+                        sendBroadcast(Intent(ACTION_DEVICE_CONNECT_STATE_CHANGED).apply {
+                            putExtra(EXTRA_DEVICE_CONNECT_STATE, ConnectState.STATE_CONNECTING.name)
+                            putExtra(
+                                BluetoothDevice.EXTRA_DEVICE,
+                                bluetoothDevice
+                            )
+                        })
+                    }
+                    oldTask?.cancel()
+                    oldConnect?.close()
                 }
-                oldTask?.cancel()
-                oldConnect?.close()
             }
         }
 

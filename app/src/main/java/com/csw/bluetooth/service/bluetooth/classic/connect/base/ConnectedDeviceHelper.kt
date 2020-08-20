@@ -16,11 +16,12 @@ import com.csw.quickmvp.handler.ThreadWithHandler
  * Socket辅助类，须在有消息处理功能的子线程中初始化
  */
 class ConnectedDeviceHelper(
+    val myDeviceAddress: String,
     val classicBluetoothService: ClassicBluetoothService,
     val bluetoothSocket: BluetoothSocket
 ) {
     //循环读取下一条数据
-    val readNextRunnable: Runnable = object : Runnable {
+    private val readNextRunnable: Runnable = object : Runnable {
         override fun run() {
             read()
             readThread.handlerProxy.post(this)
@@ -45,6 +46,10 @@ class ConnectedDeviceHelper(
             try {
                 bluetoothSocket.inputStream.run {
                     MessageFactory.instanceFromInputStream(this)?.let {
+                        //android 设备不允许获取mac地址，本地获取到的是一个假的，远程设备地址应该是真的，
+                        //这里对接收到的消息修改发送者和接收者信息，使其与本地获取到的地址对应
+                        it.setFrom(getConnectDevice().address)
+                        it.setTo(myDeviceAddress)
                         DBUtils.insertMessage(it)
                         DBUtils.updateMessageState(it.getMessageId(), MessageState.RECEIVED)
                         classicBluetoothService.onNewMessage(getConnectDevice(), it)

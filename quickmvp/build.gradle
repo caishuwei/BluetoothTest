@@ -38,6 +38,7 @@ dependencies {
     implementation rootProject.ext.androidX.appcompat
     implementation rootProject.ext.androidX.annotations
     implementation rootProject.ext.androidX.recyclerview
+    implementation rootProject.ext.androidX.cardview
     implementation rootProject.ext.androidX.viewpager
     implementation rootProject.ext.androidX.constraintlayout
     implementation rootProject.ext.androidX.gridlayout

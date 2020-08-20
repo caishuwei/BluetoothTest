@@ -154,9 +154,14 @@ object ExternalFileHelper {
      */
     fun deleteFile(filePath: String) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            //API29以上会自动删除文件，以下则需要自己删除
+            //API29以上会自动删除文件，以下则需要自己删除，需要提供写权限
             getAbsolutePathByFilePath(filePath)?.run {
-                File(this).delete()
+                try {
+                    File(this).delete()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    LogUtils.e(this@ExternalFileHelper, "deleteFile:$filePath __> 删除失败")
+                }
             }
         }
         getUriByFilePath(filePath)?.run {

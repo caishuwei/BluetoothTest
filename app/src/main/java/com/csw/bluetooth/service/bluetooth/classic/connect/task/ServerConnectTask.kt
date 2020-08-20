@@ -24,7 +24,7 @@ class ServerConnectTask(
         fun getSPPServerConnectTask(
             classicBluetoothService: ClassicBluetoothService,
             bluetoothAdapter: BluetoothAdapter
-        ): ServerConnectTask{
+        ): ServerConnectTask {
             return ServerConnectTask(
                 classicBluetoothService,
                 bluetoothAdapter,
@@ -47,6 +47,7 @@ class ServerConnectTask(
                     val bluetoothSocket = accept()
                     classicBluetoothService.onDeviceConnected(
                         ConnectedDeviceHelper(
+                            bluetoothAdapter.address,
                             classicBluetoothService,
                             bluetoothSocket
                         )

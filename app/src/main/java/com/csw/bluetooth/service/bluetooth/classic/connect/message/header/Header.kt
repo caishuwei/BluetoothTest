@@ -29,6 +29,8 @@ open class Header(val name: String) {
      * multipart/form-data ： 需要在表单中进行文件上传时，就需要使用该格式
      */
     object ContentType : Header("content-type") {
+        //文本类型
+        val TYPE_TEXT = "text/plain"
         val TYPE_JSON = "application/json"
         val TYPE_IMAGE = "image/png"
     }
@@ -49,12 +51,12 @@ open class Header(val name: String) {
     object MessageID : Header("message-id")
 
     /**
-     * 消息来自（value=device.address）
+     * 消息来自（value=deviceId）
      */
     object MessageFrom : Header("message-from")
 
     /**
-     * 消息发往（value=device.address）
+     * 消息发往（value=deviceId）
      */
     object MessageTo : Header("message-to")
 }

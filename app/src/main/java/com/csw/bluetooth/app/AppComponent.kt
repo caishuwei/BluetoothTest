@@ -3,7 +3,7 @@ package com.csw.bluetooth.app
 import android.app.Application
 import android.content.Context
 import com.csw.bluetooth.database.MyRoomDatabase
-import com.csw.bluetooth.model.ExternalFileDataCache
+import com.csw.bluetooth.model.DataModel
 import com.csw.bluetooth.service.bluetooth.classic.ClassicBluetoothService
 import com.csw.bluetooth.ui.chat.ChatComponent
 import com.csw.bluetooth.ui.scan.ScanDeviceComponent
@@ -81,7 +81,7 @@ class AppModule {
     @Named("App")
     @AppSingleton
     @Provides
-    fun getExternalFileDataCache(externalFileDataCache: ExternalFileDataCache): ExternalFileDataCache {
-        return externalFileDataCache
+    fun getDataModel(dataModel: DataModel): DataModel {
+        return dataModel
     }
 }
