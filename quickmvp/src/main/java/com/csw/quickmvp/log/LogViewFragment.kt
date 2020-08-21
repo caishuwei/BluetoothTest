@@ -29,19 +29,27 @@ class LogViewFragment : Fragment() {
     private val logInfoList = ArrayList<LogInfo>()
     private var logAdapter: LogAdapter? = null
     private var logListView: NoTouchRecyclerView? = null
-    private var disposable: Disposable? = null
+    private var logIcon: ImageView? = null
+    private var onNewLogInfoListener: Disposable? = null
+    private var onLogExpandChangedListener: Disposable? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         logInfoList.clear()
-        disposable?.dispose()
-        disposable = RxBus.getDefault().toObservable(OnNewLogInfo::class.java)
+        onNewLogInfoListener?.dispose()
+        onNewLogInfoListener = RxBus.getDefault().toObservable(OnNewLogInfo::class.java)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
                 logInfoList.add(0, it.logInfo)
                 logAdapter?.notifyDataSetChanged()
+            }
+        onLogExpandChangedListener?.dispose()
+        onLogExpandChangedListener = RxBus.getDefault().toObservable(OnLogExpandChanged::class.java)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                setExpandState(it.expand)
             }
         container?.run {
             val relativeLayout = RelativeLayout(context)
@@ -82,33 +90,38 @@ class LogViewFragment : Fragment() {
                 }
             )
 
-            val imageView = ImageView(context).apply {
+            logIcon = ImageView(context).apply {
                 adjustViewBounds = true
                 scaleType = ImageView.ScaleType.CENTER_INSIDE
                 setPadding(dp5, dp5, dp5, dp5)
-                setImageResource(R.drawable.quick_mvp_svg_ic_logs_enable)
                 setOnClickListener {
                     logListView?.let { recyclerView ->
-                        if (recyclerView.visibility == View.VISIBLE) {
-                            recyclerView.visibility = View.GONE
-                            setImageResource(R.drawable.quick_mvp_svg_ic_logs_disable)
-                        } else {
-                            recyclerView.visibility = View.VISIBLE
-                            setImageResource(R.drawable.quick_mvp_svg_ic_logs_enable)
-                        }
+                        LogDisplayController.instance.onLogExpandChanged(recyclerView.visibility == View.GONE)
                     }
                 }
             }
             cardView.addView(
-                imageView, ViewGroup.LayoutParams(
+                logIcon, ViewGroup.LayoutParams(
                     ScreenInfo.dp2Px(40f),
                     ViewGroup.LayoutParams.WRAP_CONTENT
                 )
             )
-
+            setExpandState(LogDisplayController.instance.logExpanded)
             return relativeLayout
         }
         return null
+    }
+
+    fun setExpandState(expand: Boolean) {
+        logListView?.let { recyclerView ->
+            if (expand) {
+                recyclerView.visibility = View.VISIBLE
+                logIcon?.setImageResource(R.drawable.quick_mvp_svg_ic_logs_enable)
+            } else {
+                recyclerView.visibility = View.GONE
+                logIcon?.setImageResource(R.drawable.quick_mvp_svg_ic_logs_disable)
+            }
+        }
     }
 
     override fun onResume() {
@@ -121,8 +134,10 @@ class LogViewFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        disposable?.dispose()
-        disposable = null
+        onLogExpandChangedListener?.dispose()
+        onNewLogInfoListener = null
+        onNewLogInfoListener?.dispose()
+        onNewLogInfoListener = null
         logAdapter = null
         logListView = null
         super.onDestroyView()

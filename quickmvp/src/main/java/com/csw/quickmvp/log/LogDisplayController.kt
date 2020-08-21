@@ -22,6 +22,9 @@ class LogDisplayController private constructor() {
         val instance = LogDisplayController()
     }
 
+    //是否展开日志，默认false
+    var logExpanded: Boolean = false
+        private set
     private var cursor = 0
     private val logArray = Array<LogInfo?>(MAX_LOG_SIZE) {
         null
@@ -95,6 +98,11 @@ class LogDisplayController private constructor() {
             }
         }
         return result
+    }
+
+    fun onLogExpandChanged(expand: Boolean) {
+        logExpanded = expand
+        RxBus.getDefault().post(OnLogExpandChanged(expand))
     }
 
 }

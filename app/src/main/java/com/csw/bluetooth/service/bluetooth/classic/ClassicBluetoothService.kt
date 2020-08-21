@@ -21,6 +21,7 @@ import com.csw.bluetooth.service.bluetooth.classic.connect.message.TextMessage
 import com.csw.bluetooth.service.bluetooth.classic.connect.task.ClientConnectTask
 import com.csw.bluetooth.service.bluetooth.classic.connect.task.ICancelableConnectTask
 import com.csw.bluetooth.service.bluetooth.classic.connect.task.ServerConnectTask
+import com.csw.bluetooth.ui.chat.ChatActivity
 import com.csw.bluetooth.utils.getDisplayName
 import com.csw.quickmvp.utils.LogUtils
 import com.csw.quickmvp.utils.Utils
@@ -40,6 +41,7 @@ class ClassicBluetoothService : Service() {
         const val EXTRA_DEVICE_CONNECT_STATE = "EXTRA_DEVICE_CONNECT_STATE"
         private const val ACTION_BEGIN_DISCOVERY = "ACTION_BEGIN_DISCOVERY"
         private const val ACTION_CANCEL_DISCOVERY = "ACTION_CANCEL_DISCOVERY"
+        private const val ACTION_WAIT_FOR_CLIENT_CONTENT = "ACTION_WAIT_FOR_CLIENT_CONTENT"
 
         fun cancelDiscovery(context: Context) {
             startService(context, ACTION_CANCEL_DISCOVERY)
@@ -49,7 +51,11 @@ class ClassicBluetoothService : Service() {
             startService(context, ACTION_BEGIN_DISCOVERY)
         }
 
-        fun startService(context: Context, actionStr: String? = null) {
+        fun waitForClientConnect(context: Context) {
+            startService(context, ACTION_WAIT_FOR_CLIENT_CONTENT)
+        }
+
+        private fun startService(context: Context, actionStr: String? = null) {
             ContextCompat.startForegroundService(
                 context,
                 Intent(context, ClassicBluetoothService::class.java)
@@ -190,6 +196,9 @@ class ClassicBluetoothService : Service() {
                 ACTION_CANCEL_DISCOVERY -> {
                     myClassicBluetoothImpl.cancelDiscovery()
                 }
+                ACTION_WAIT_FOR_CLIENT_CONTENT -> {
+                    startServerConnectTask()
+                }
             }
         }
         return super.onStartCommand(intent, flags, startId)
@@ -221,7 +230,10 @@ class ClassicBluetoothService : Service() {
         }
     }
 
-    fun onDeviceConnected(connectedDeviceHelper: ConnectedDeviceHelper) {
+    fun onDeviceConnected(
+        connectTask: ICancelableConnectTask,
+        connectedDeviceHelper: ConnectedDeviceHelper
+    ) {
         LogUtils.d(
             this,
             "onDeviceConnected ${connectedDeviceHelper.getConnectDevice().getDisplayName()}"
@@ -232,6 +244,10 @@ class ClassicBluetoothService : Service() {
         })
         this.connectedDeviceHelper?.close()
         this.connectedDeviceHelper = connectedDeviceHelper
+        if (connectTask is ServerConnectTask) {
+            //与客户端连接上
+            ChatActivity.openActivity(this, connectedDeviceHelper.getConnectDevice())
+        }
     }
 
     fun onDeviceDisconnect(connectedDeviceHelper: ConnectedDeviceHelper) {

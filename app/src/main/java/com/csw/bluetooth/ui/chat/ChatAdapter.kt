@@ -7,7 +7,8 @@ import com.csw.bluetooth.R
 import com.csw.bluetooth.database.table.TextMessageData
 import com.csw.bluetooth.entities.MessageItem
 
-class ChatAdapter : BaseMultiItemQuickAdapter<MultiItemEntity, BaseViewHolder>(null) {
+class ChatAdapter(data: List<MultiItemEntity>) :
+    BaseMultiItemQuickAdapter<MultiItemEntity, BaseViewHolder>(data) {
 
     init {
         addItemType(MessageItem.SEND_TEXT, R.layout.item_send_text)

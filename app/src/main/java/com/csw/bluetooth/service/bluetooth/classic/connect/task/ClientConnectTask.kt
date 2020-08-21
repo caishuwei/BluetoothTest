@@ -46,6 +46,7 @@ class ClientConnectTask(
                 LogUtils.d(this@ClientConnectTask, "connect()")
                 connect()
                 classicBluetoothService.onDeviceConnected(
+                    this@ClientConnectTask,
                     ConnectedDeviceHelper(
                         myDeviceAddress,
                         classicBluetoothService,

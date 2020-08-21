@@ -5,13 +5,11 @@ import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
-import android.provider.MediaStore
 import android.view.View
 import android.widget.ImageView
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.csw.bluetooth.R
 import com.csw.bluetooth.app.MyApplication
 import com.csw.bluetooth.entities.MessageItem
@@ -34,6 +32,7 @@ class ChatActivity : BaseMVPActivity<ChatContract.Presenter>(), ChatContract.Vie
         }
     }
 
+    private val messageList = ArrayList<MultiItemEntity>()
     private var adapter: ChatAdapter? = null
 
     override fun initInject() {
@@ -65,7 +64,7 @@ class ChatActivity : BaseMVPActivity<ChatContract.Presenter>(), ChatContract.Vie
 
     override fun initAdapter() {
         super.initAdapter()
-        adapter = ChatAdapter()?.apply {
+        adapter = ChatAdapter(messageList)?.apply {
             recyclerView?.adapter = this
         }
     }
@@ -84,7 +83,6 @@ class ChatActivity : BaseMVPActivity<ChatContract.Presenter>(), ChatContract.Vie
                 }
             }
         }
-
         send?.setOnClickListener {
             msg?.text?.toString()?.trim()?.run {
                 if (presenter.sendToDevice(this)) {
@@ -137,7 +135,24 @@ class ChatActivity : BaseMVPActivity<ChatContract.Presenter>(), ChatContract.Vie
     }
 
     override fun updateMessageList(messageItemList: List<MessageItem>) {
-        adapter?.setNewData(messageItemList)
-
+        var scrollToEnd = false
+        recyclerView?.layoutManager?.run {
+            if (this is LinearLayoutManager) {
+                val lastCompletelyVisibleItem = findLastCompletelyVisibleItemPosition()
+                if (itemCount == 0) {
+                    //没有item
+                    scrollToEnd = true
+                } else if (lastCompletelyVisibleItem == itemCount - 1) {
+                    //最后一个Item完全可见
+                    scrollToEnd = true
+                }
+            }
+        }
+        messageList.clear()
+        messageList.addAll(messageItemList)
+        adapter?.notifyDataSetChanged()
+        if (scrollToEnd) {
+            recyclerView?.scrollToEnd()
+        }
     }
 }

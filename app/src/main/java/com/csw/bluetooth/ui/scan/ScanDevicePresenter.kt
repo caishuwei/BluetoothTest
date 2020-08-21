@@ -20,12 +20,14 @@ class ScanDevicePresenter @Inject constructor(
 ) : BasePresenterImpl<ScanDeviceContract.View>(view)
     , ScanDeviceContract.Presenter {
     private val bluetoothDevices = ArrayList<BluetoothDevice>()
-    private val boundDevices = DevicesGroup(context.getString(R.string.bonded_device), ArrayList()).apply {
-        isExpanded = true
-    }
-    private val otherDevices = DevicesGroup(context.getString(R.string.enable_device), ArrayList()).apply {
-        isExpanded = true
-    }
+    private val boundDevices =
+        DevicesGroup(context.getString(R.string.bonded_device), ArrayList()).apply {
+            isExpanded = true
+        }
+    private val otherDevices =
+        DevicesGroup(context.getString(R.string.enable_device), ArrayList()).apply {
+            isExpanded = true
+        }
     private val uiList = ArrayList<MultiItemEntity>().apply {
         add(boundDevices)
         add(otherDevices)
@@ -64,7 +66,6 @@ class ScanDevicePresenter @Inject constructor(
 
     override fun onUICreated() {
         super.onUICreated()
-        ClassicBluetoothService.startService(context)
         context.bindService(
             Intent(context, ClassicBluetoothService::class.java),
             conn,

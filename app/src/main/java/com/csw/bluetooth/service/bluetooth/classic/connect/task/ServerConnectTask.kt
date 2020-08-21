@@ -46,6 +46,7 @@ class ServerConnectTask(
                     LogUtils.d(this@ServerConnectTask, "accept()")
                     val bluetoothSocket = accept()
                     classicBluetoothService.onDeviceConnected(
+                        this@ServerConnectTask,
                         ConnectedDeviceHelper(
                             bluetoothAdapter.address,
                             classicBluetoothService,

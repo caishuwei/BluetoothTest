@@ -29,7 +29,6 @@ class MyApplication : Application() {
         instance = this
         SDK.init(this)
         DaggerAppComponent.builder().setMyApplication(this).build().inject(this)
-        LogUtils.d(this, ExternalFileDataCache().getDeviceId())
     }
 
 }

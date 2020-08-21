@@ -54,7 +54,6 @@ class ChatPresenter @Inject constructor(
         context.registerReceiver(receiver, IntentFilter().apply {
             addAction(ClassicBluetoothService.ACTION_DEVICE_CONNECT_STATE_CHANGED)
         })
-        ClassicBluetoothService.startService(context)
         context.bindService(
             Intent(context, ClassicBluetoothService::class.java),
             conn,
