@@ -2,12 +2,14 @@ package com.csw.bluetooth.database
 
 import com.csw.bluetooth.app.MyApplication
 import com.csw.bluetooth.database.dao.MessageDao
+import com.csw.bluetooth.database.table.ImageMessageData
 import com.csw.bluetooth.database.table.Message
 import com.csw.bluetooth.database.table.TextMessageData
 import com.csw.bluetooth.database.values.MessageState
 import com.csw.bluetooth.database.values.MessageType
 import com.csw.bluetooth.event.OnMessageStateChanged
 import com.csw.bluetooth.service.bluetooth.classic.connect.message.IMessage
+import com.csw.bluetooth.service.bluetooth.classic.connect.message.ImageMessage
 import com.csw.bluetooth.service.bluetooth.classic.connect.message.TextMessage
 import com.csw.quickmvp.utils.RxBus
 
@@ -39,6 +41,16 @@ object DBUtils {
                 )
                 MessageType.TEXT
             }
+            is ImageMessage -> {
+                //插入图片消息数据
+                getMessageDao().insertOrReplace(
+                    ImageMessageData(
+                        messageId,
+                        message.imageContentUri.toString()
+                    )
+                )
+                MessageType.IMAGE
+            }
             else -> null
         }?.run {
             //插入消息记录
@@ -61,6 +73,13 @@ object DBUtils {
      */
     fun getTextMessageData(messageId: String): TextMessageData? {
         return getMessageDao().getTextMessageData(messageId)
+    }
+
+    /**
+     * 获取文本消息数据
+     */
+    fun getImageMessageData(messageId: String): ImageMessageData? {
+        return getMessageDao().getImageMessageData(messageId)
     }
 
     /**

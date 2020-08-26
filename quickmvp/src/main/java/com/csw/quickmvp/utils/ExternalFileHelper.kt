@@ -51,7 +51,7 @@ object ExternalFileHelper {
      * 如test.txt(../Download/PackageName/test.txt)
      * 或者device/DeviceID.txt(../Download/PackageName/device/DeviceID.txt)
      */
-    fun createFile(filePath: String): Uri? {
+    fun createFile(filePath: String, mimeType: String = "text/plain"): Uri? {
         val lastPos = filePath.lastIndexOf("/")
         var prePath: String? = null
         var fileName: String = filePath
@@ -63,8 +63,8 @@ object ExternalFileHelper {
 
         val contentValues = ContentValues()
         contentValues.put(FileColumns.DISPLAY_NAME, fileName)
-        contentValues.put(FileColumns.MEDIA_TYPE, FileColumns.MEDIA_TYPE_NONE)
-        contentValues.put(FileColumns.MIME_TYPE, "text/plain")
+        contentValues.put(FileColumns.MIME_TYPE, mimeType)
+//        contentValues.put(FileColumns.MEDIA_TYPE, FileColumns.MEDIA_TYPE_NONE)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             //设置相对路径，存储于../Download/package/下面，API29设置相对路径后会插入数据会自动创建文件
             val relativePath = if (prePath == null) {

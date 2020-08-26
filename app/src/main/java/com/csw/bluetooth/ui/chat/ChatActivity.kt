@@ -14,6 +14,8 @@ import com.csw.bluetooth.R
 import com.csw.bluetooth.app.MyApplication
 import com.csw.bluetooth.entities.MessageItem
 import com.csw.bluetooth.service.bluetooth.ConnectState
+import com.csw.bluetooth.ui.fullscreen.ImageBrowseActivity
+import com.csw.bluetooth.view.ChatInputView
 import com.csw.quickmvp.mvp.ui.BaseMVPActivity
 import com.csw.quickmvp.utils.SpaceLineDecoration
 import kotlinx.android.synthetic.main.activity_chat.*
@@ -33,7 +35,7 @@ class ChatActivity : BaseMVPActivity<ChatContract.Presenter>(), ChatContract.Vie
     }
 
     private val messageList = ArrayList<MultiItemEntity>()
-    private var adapter: ChatAdapter? = null
+    private var chatAdapter: ChatAdapter? = null
 
     override fun initInject() {
         super.initInject()
@@ -64,7 +66,7 @@ class ChatActivity : BaseMVPActivity<ChatContract.Presenter>(), ChatContract.Vie
 
     override fun initAdapter() {
         super.initAdapter()
-        adapter = ChatAdapter(messageList)?.apply {
+        chatAdapter = ChatAdapter(messageList)?.apply {
             recyclerView?.adapter = this
         }
     }
@@ -85,8 +87,28 @@ class ChatActivity : BaseMVPActivity<ChatContract.Presenter>(), ChatContract.Vie
         }
         send?.setOnClickListener {
             msg?.text?.toString()?.trim()?.run {
-                if (presenter.sendToDevice(this)) {
+                if (presenter.sendTextToDevice(this)) {
                     msg?.text = null
+                }
+            }
+        }
+
+        chatInputView?.onRequestSendMessageListener =
+            object : ChatInputView.OnRequestSendMessageListener {
+                override fun sendImage(uri: String) {
+                    presenter.sendImageToDevice(uri)
+                }
+            }
+
+        chatAdapter?.setOnItemClickListener { _, _, position ->
+            chatAdapter?.getItem(position)?.run {
+                if (this is MessageItem) {
+                    val destId = message.messageId
+                    when(itemType){
+                        MessageItem.RECEIVE_IMAGE,MessageItem.SEND_IMAGE->{
+                            ImageBrowseActivity.openActivity(this@ChatActivity,presenter.getImageMessageItemList(),destId)
+                        }
+                    }
                 }
             }
         }
@@ -150,7 +172,7 @@ class ChatActivity : BaseMVPActivity<ChatContract.Presenter>(), ChatContract.Vie
         }
         messageList.clear()
         messageList.addAll(messageItemList)
-        adapter?.notifyDataSetChanged()
+        chatAdapter?.notifyDataSetChanged()
         if (scrollToEnd) {
             recyclerView?.scrollToEnd()
         }

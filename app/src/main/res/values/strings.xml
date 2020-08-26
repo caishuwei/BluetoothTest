@@ -16,4 +16,5 @@
     <string name="btn_send">发送</string>
     <string name="input_hint">请输入文本并点击发送</string>
     <string name="menu_connect_state">连接状态</string>
+    <string name="function_pick_image">选择图片</string>
 </resources>

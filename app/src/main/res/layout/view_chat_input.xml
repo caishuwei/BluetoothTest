@@ -10,9 +10,8 @@
     <FrameLayout
         android:id="@+id/extrasFunctionPanel"
         android:layout_width="0dp"
-        android:layout_height="300dp"
-        android:background="@color/color_B00020"
-        android:visibility="gone"
+        android:layout_height="0dp"
+        android:background="?attr/colorSurface"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -20,7 +19,7 @@
         <androidx.viewpager.widget.ViewPager
             android:id="@+id/viewPager"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="260dp" />
     </FrameLayout>
 
     <ImageView
@@ -48,13 +47,19 @@
         android:id="@+id/msg"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="9dp"
+        android:background="@drawable/shape_edit_bg"
         android:hint="@string/input_hint"
         android:importantForAutofill="no"
         android:inputType="none"
+        android:minHeight="30dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:textColor="?attr/colorOnSurface"
         app:layout_constraintBottom_toTopOf="@id/extrasFunctionPanel"
         app:layout_constraintEnd_toStartOf="@id/send"
         app:layout_constraintStart_toEndOf="@id/extrasFunction"
-        tools:text="sdasdasdasdasdasdadasdadsdadadadadaddasdasdasdasd" />
-
+        tools:text="sdasdasdasdasdasdadasdasdasdasdasdasdasdadsdasdasdasdasdasdaddsdadadadadaddasdasdasdasd" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import java.io.Serializable
 
 @Entity(
     tableName = "TextMessageData",
@@ -16,4 +17,4 @@ data class TextMessageData(
 
     @ColumnInfo(name = "text")
     val text: String//消息内容
-)
+) : Serializable

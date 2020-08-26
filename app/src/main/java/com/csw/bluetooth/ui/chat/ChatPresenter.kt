@@ -175,8 +175,24 @@ class ChatPresenter @Inject constructor(
         }
     }
 
-    override fun sendToDevice(msg: String): Boolean {
+    override fun sendTextToDevice(msg: String): Boolean {
         return conn.iClassicBluetoothInterface?.sendTextToDevice(bluetoothDevice, msg) ?: false
+    }
+
+    override fun sendImageToDevice(uri: String): Boolean {
+        return conn.iClassicBluetoothInterface?.sendImageToDevice(bluetoothDevice, uri) ?: false
+    }
+
+    override fun getImageMessageItemList(): java.util.ArrayList<MessageItem> {
+        val result = ArrayList<MessageItem>()
+        for (item in messageItemList) {
+            if (item.itemType == MessageItem.RECEIVE_IMAGE
+                || item.itemType == MessageItem.SEND_IMAGE
+            ) {
+                result.add(item)
+            }
+        }
+        return result
     }
 
     override fun onUIDestroy() {
@@ -184,6 +200,7 @@ class ChatPresenter @Inject constructor(
         context.unbindService(conn)
         super.onUIDestroy()
     }
+
 
     //inner class-----------------------------------------------------------------------------------
     private inner class ClassicBluetoothServiceConnection : ServiceConnection {

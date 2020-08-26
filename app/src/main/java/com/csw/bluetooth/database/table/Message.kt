@@ -6,6 +6,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.csw.bluetooth.database.values.MessageState
 import com.csw.bluetooth.database.values.MessageType
+import java.io.Serializable
 
 /**
  * data class Kotlin数据类，不能被继承，不能是抽象的,
@@ -54,7 +55,7 @@ data class Message(
     //接收设备的地址
     @ColumnInfo(name = "to")
     val to: String
-) {
+) : Serializable {
 
     /**
      * 获取消息类型

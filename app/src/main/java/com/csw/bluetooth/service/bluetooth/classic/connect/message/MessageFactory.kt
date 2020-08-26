@@ -1,5 +1,6 @@
 package com.csw.bluetooth.service.bluetooth.classic.connect.message
 
+import com.csw.bluetooth.app.MyApplication
 import com.csw.bluetooth.database.DBUtils
 import com.csw.bluetooth.database.table.Message
 import com.csw.bluetooth.database.values.MessageType
@@ -47,39 +48,53 @@ class MessageFactory {
                     }
                 }
             }
-            headerMap[Header.MessageID.name]?.let { messgeId ->
-                //解析头，取得body长度
-                headerMap[Header.ContentLength.name]?.let { contentLength ->
-                    val bodySize = try {
-                        contentLength.toInt()
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        0
-                    }
+            val messageId = headerMap[Header.MessageID.name]
+            if (messageId == null) {
+                return null
+            }
+            val contentType = headerMap[Header.ContentType.name]
+            val contentLength = headerMap[Header.ContentLength.name]
+            var bodySize = 0L
+            try {
+                contentLength?.run {
+                    bodySize = this.toLong()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            return when (contentType) {
+                Header.ContentType.TYPE_TEXT -> {
                     val body = if (bodySize > 0) {
                         //取得body
-                        val bodyData = ByteArray(bodySize)
+                        val bodyData = ByteArray(bodySize.toInt())
                         inputStream.read(bodyData)
                         bodyData
                     } else {
                         null
                     }
-                    //获取内容类型生成对应实例
-                    headerMap[Header.ContentType.name]?.let { contentType ->
-                        return when (contentType) {
-                            Header.ContentType.TYPE_TEXT -> {
-                                TextMessage(messgeId, String(body ?: ByteArray(0)))
-                            }
-                            else -> {
-                                null
-                            }
-                        }?.apply {
-                            setHeaders(headerMap)
+                    TextMessage(messageId, String(body ?: ByteArray(0)))
+                }
+                Header.ContentType.TYPE_IMAGE -> {
+                    val mimeType = headerMap[Header.MimeType.name] ?: "image/*"
+                    var result: ImageMessage? = null
+                    if (bodySize > 0) {
+                        MyApplication.instance.dataModel.saveImage(
+                            messageId,
+                            mimeType,
+                            inputStream,
+                            bodySize
+                        )?.run {
+                            result = ImageMessage(messageId, this)
                         }
                     }
+                    result
                 }
+                else -> {
+                    null
+                }
+            }?.apply {
+                setHeaders(headerMap)
             }
-            return null
         }
 
         fun dbMessageToMessage(message: Message): IMessage? {

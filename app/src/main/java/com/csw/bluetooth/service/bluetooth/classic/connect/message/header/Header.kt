@@ -35,6 +35,8 @@ open class Header(val name: String) {
         val TYPE_IMAGE = "image/png"
     }
 
+    object MimeType:Header("mime-type")
+
     /**
      * body字节长度（Long）
      */

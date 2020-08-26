@@ -9,6 +9,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.net.Uri
 import android.os.IBinder
 import androidx.core.content.ContextCompat
 import com.csw.bluetooth.IClassicBluetoothInterface
@@ -17,6 +18,7 @@ import com.csw.bluetooth.database.DBUtils
 import com.csw.bluetooth.service.bluetooth.ConnectState
 import com.csw.bluetooth.service.bluetooth.classic.connect.base.ConnectedDeviceHelper
 import com.csw.bluetooth.service.bluetooth.classic.connect.message.IMessage
+import com.csw.bluetooth.service.bluetooth.classic.connect.message.ImageMessage
 import com.csw.bluetooth.service.bluetooth.classic.connect.message.TextMessage
 import com.csw.bluetooth.service.bluetooth.classic.connect.task.ClientConnectTask
 import com.csw.bluetooth.service.bluetooth.classic.connect.task.ICancelableConnectTask
@@ -267,6 +269,31 @@ class ClassicBluetoothService : Service() {
         }
     }
 
+    /**
+     * 对已连接的目标设备发出一条消息
+     * @param message 消息对象
+     * @param bluetoothDevice 目标设备
+     */
+    private fun sendMessage(
+        message: IMessage,
+        bluetoothDevice: BluetoothDevice
+    ): Boolean {
+        val from = bluetoothAdapter?.address
+        val to = bluetoothDevice.address
+        if (from == null) {
+            return false
+        }
+        connectedDeviceHelper?.run {
+            if (getConnectDevice() == bluetoothDevice) {
+                message.setFrom(from)
+                message.setTo(to)
+                DBUtils.insertMessage(message)
+                return write(message)
+            }
+        }
+        return false
+    }
+
     //inner class-----------------------------------------------------------------------------------
     private inner class MyClassicBluetoothImpl : IClassicBluetoothInterface.Stub() {
 
@@ -355,21 +382,18 @@ class ClassicBluetoothService : Service() {
 
         override fun sendTextToDevice(bluetoothDevice: BluetoothDevice?, msg: String?): Boolean {
             if (bluetoothDevice != null && msg != null) {
-                val from = bluetoothAdapter?.address
-                val to = bluetoothDevice.address
-                val id = Utils.generateId()
-                if (from == null) {
-                    return false
-                }
-                connectedDeviceHelper?.run {
-                    if (getConnectDevice() == bluetoothDevice) {
-                        val iMessage = TextMessage(id, msg).apply {
-                            setFrom(from)
-                            setTo(to)
-                        }
-                        DBUtils.insertMessage(iMessage)
-                        return write(iMessage)
-                    }
+                return sendMessage(TextMessage(Utils.generateId(), msg), bluetoothDevice)
+            }
+            return false
+        }
+
+        override fun sendImageToDevice(bluetoothDevice: BluetoothDevice?, uri: String?): Boolean {
+            if (bluetoothDevice != null && uri != null) {
+                try {
+                    val u = Uri.parse(uri)
+                    return sendMessage(ImageMessage(Utils.generateId(), u), bluetoothDevice)
+                } catch (e: Exception) {
+                    LogUtils.e(this@ClassicBluetoothService, "sendImageToDevice failed -> $uri")
                 }
             }
             return false

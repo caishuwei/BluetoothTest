@@ -41,4 +41,9 @@ interface IClassicBluetoothInterface {
      * 发送文本消息到设备
      */
     boolean sendTextToDevice(in BluetoothDevice bluetoothDevice, in String msg);
+
+    /**
+     * 发送图片消息到设备
+     */
+    boolean sendImageToDevice(in BluetoothDevice bluetoothDevice, in String uri);
 }

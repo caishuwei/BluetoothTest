@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import java.io.Serializable
 
 @Entity(
     tableName = "ImageMessageData",
@@ -17,4 +18,4 @@ data class ImageMessageData(
     @ColumnInfo(name = "imageUrl")
     val imageUrl: String//本地图片地址
 
-)
+) : Serializable

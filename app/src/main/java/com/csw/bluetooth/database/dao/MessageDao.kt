@@ -35,4 +35,6 @@ interface MessageDao {
     @Query("SELECT * FROM TextMessageData WHERE TextMessageData.messageId =:messageID")
     fun getTextMessageData(messageID: String): TextMessageData?
 
+    @Query("SELECT * FROM ImageMessageData WHERE ImageMessageData.messageId =:messageID")
+    fun getImageMessageData(messageID: String): ImageMessageData?
 }
