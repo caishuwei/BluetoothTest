@@ -93,6 +93,7 @@ class ChatInputView @JvmOverloads constructor(
     }
 
     private fun openFunctionPanel() {
+
         //执行动画，展开额外功能面板
         extrasFunctionPanel?.run {
             viewPager?.layoutParams?.height?.let { displayHeight ->

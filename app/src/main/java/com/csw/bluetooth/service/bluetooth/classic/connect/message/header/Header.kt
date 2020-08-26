@@ -36,6 +36,7 @@ open class Header(val name: String) {
     }
 
     object MimeType:Header("mime-type")
+    object FileFormat:Header("file-format")
 
     /**
      * body字节长度（Long）

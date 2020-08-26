@@ -393,6 +393,7 @@ class ClassicBluetoothService : Service() {
                     val u = Uri.parse(uri)
                     return sendMessage(ImageMessage(Utils.generateId(), u), bluetoothDevice)
                 } catch (e: Exception) {
+                    e.printStackTrace()
                     LogUtils.e(this@ClassicBluetoothService, "sendImageToDevice failed -> $uri")
                 }
             }
