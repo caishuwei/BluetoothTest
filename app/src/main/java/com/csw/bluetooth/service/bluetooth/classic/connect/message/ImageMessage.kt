@@ -41,7 +41,7 @@ class ImageMessage(val id: String, val imageContentUri: Uri) : BaseMessage(id) {
                 val lastPointIndex = name.lastIndexOf(".")
                 if (lastPointIndex != -1 && lastPointIndex < name.length - 1) {
                     headers[Header.FileFormat.name] =
-                        filePath.substring(lastPointIndex + 1, name.length)
+                        name.substring(lastPointIndex + 1, name.length)
                 }
                 headers[Header.MimeType.name] = mimeType
             }

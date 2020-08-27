@@ -65,4 +65,6 @@ dependencies {
     implementation rootProject.ext.others.room_rxjava2
     implementation rootProject.ext.others.room_guava
     testImplementation rootProject.ext.others.room_testing
+
+    implementation rootProject.ext.others.photoView
 }

@@ -12,6 +12,7 @@ import android.provider.MediaStore.Files.FileColumns
 import android.text.TextUtils
 import com.csw.quickmvp.SDK
 import java.io.*
+import java.util.*
 
 /**
  * 外置存储文件辅助类
@@ -60,11 +61,21 @@ object ExternalFileHelper {
             prePath = filePath.substring(0, lastPos)
             fileName = filePath.substring(lastPos + 1, filePath.length)
         }
-
+        val mediaType = if (mimeType.toLowerCase(Locale.getDefault()).startsWith("image")) {
+            FileColumns.MEDIA_TYPE_IMAGE
+        } else if (mimeType.toLowerCase(Locale.getDefault()).startsWith("video")) {
+            FileColumns.MEDIA_TYPE_VIDEO
+        } else if (mimeType.toLowerCase(Locale.getDefault()).startsWith("audio")) {
+            FileColumns.MEDIA_TYPE_AUDIO
+        } else {
+            FileColumns.MEDIA_TYPE_NONE
+        }
         val contentValues = ContentValues()
         contentValues.put(FileColumns.DISPLAY_NAME, fileName)
-        contentValues.put(FileColumns.MIME_TYPE, mimeType)
-//        contentValues.put(FileColumns.MEDIA_TYPE, FileColumns.MEDIA_TYPE_NONE)
+        //mimeType没有通过注解标记只读属性，但注释里面说这个属性是只读的，会自动计算
+        //这里设置image/gif也没用，通过glide加载的图片也没有gif多帧渲染，不设置反而可以，看来真的是自动赋值？
+//        contentValues.put(FileColumns.MIME_TYPE, mimeType)
+        contentValues.put(FileColumns.MEDIA_TYPE, mediaType)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             //设置相对路径，存储于../Download/package/下面，API29设置相对路径后会插入数据会自动创建文件
             val relativePath = if (prePath == null) {

@@ -39,12 +39,17 @@ class ChatAdapter(data: List<MultiItemEntity>) :
                         }
                     }
                     is ImageMessageData -> {
+                        helper.addOnClickListener(R.id.image)
                         when (helper.itemViewType) {
                             MessageItem.SEND_IMAGE -> {
-                                ImageLoader.loadImage(null,helper.getView(R.id.image),imageUrl)
+                                ImageLoader.loadImage(
+                                    null,
+                                    helper.getView(R.id.image),
+                                    imageUrl
+                                )
                             }
                             MessageItem.RECEIVE_IMAGE -> {
-                                ImageLoader.loadImage(null,helper.getView(R.id.image),imageUrl)
+                                ImageLoader.loadImage(null, helper.getView(R.id.image), imageUrl)
                             }
                             else -> {
                             }

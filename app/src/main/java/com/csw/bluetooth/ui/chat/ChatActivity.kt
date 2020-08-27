@@ -99,14 +99,38 @@ class ChatActivity : BaseMVPActivity<ChatContract.Presenter>(), ChatContract.Vie
                     presenter.sendImageToDevice(uri)
                 }
             }
+        chatAdapter?.setOnItemChildClickListener { _, view, position ->
+            chatAdapter?.getItem(position)?.run {
+                when (view.id) {
+                    R.id.image -> {
+                        if (this is MessageItem) {
+                            val destId = message.messageId
+                            when (itemType) {
+                                MessageItem.RECEIVE_IMAGE, MessageItem.SEND_IMAGE -> {
+                                    ImageBrowseActivity.openActivity(
+                                        this@ChatActivity,
+                                        presenter.getImageMessageItemList(),
+                                        destId
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
+        }
         chatAdapter?.setOnItemClickListener { _, _, position ->
             chatAdapter?.getItem(position)?.run {
                 if (this is MessageItem) {
                     val destId = message.messageId
-                    when(itemType){
-                        MessageItem.RECEIVE_IMAGE,MessageItem.SEND_IMAGE->{
-                            ImageBrowseActivity.openActivity(this@ChatActivity,presenter.getImageMessageItemList(),destId)
+                    when (itemType) {
+                        MessageItem.RECEIVE_IMAGE, MessageItem.SEND_IMAGE -> {
+                            ImageBrowseActivity.openActivity(
+                                this@ChatActivity,
+                                presenter.getImageMessageItemList(),
+                                destId
+                            )
                         }
                     }
                 }

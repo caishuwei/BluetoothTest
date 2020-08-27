@@ -75,8 +75,22 @@ class MessageFactory {
                     TextMessage(messageId, String(body ?: ByteArray(0)))
                 }
                 Header.ContentType.TYPE_IMAGE -> {
-                    val mimeType = headerMap[Header.MimeType.name] ?: "image/*"
-                    val fileFormat = headerMap[Header.FileFormat.name] ?: "jpg"
+                    val mimeType = headerMap[Header.MimeType.name] ?: "image/jpeg"
+                    val mimeData = mimeType.split("/")
+                    val mimeFormat = if (mimeData.size == 2) {
+                        mimeData[1].toLowerCase()
+                    } else {
+                        null
+                    }
+                    val format = headerMap[Header.FileFormat.name]
+                    val fileFormat =
+                        if (format != null) {
+                            format
+                        } else if (mimeFormat != null) {
+                            mimeFormat
+                        } else {
+                            "jpg"
+                        }
                     var result: ImageMessage? = null
                     if (bodySize > 0) {
                         MyApplication.instance.dataModel.saveImage(

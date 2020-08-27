@@ -14,6 +14,7 @@ import com.csw.bluetooth.entities.MessageItem
 import com.csw.quickmvp.mvp.ui.BaseActivity
 import com.csw.quickmvp.utils.ImageLoader
 import kotlinx.android.synthetic.main.activity_image_borwse.*
+import uk.co.senab.photoview.PhotoView
 
 class ImageBrowseActivity : BaseActivity() {
 
@@ -81,7 +82,7 @@ class ImageBrowseActivity : BaseActivity() {
         }
 
         override fun instantiateItem(container: ViewGroup, position: Int): Any {
-            return ImageView(container.context).apply {
+            return PhotoView(container.context).apply {
                 scaleType = ImageView.ScaleType.CENTER_INSIDE
                 val item = data[position]
                 item.getData()?.run {
