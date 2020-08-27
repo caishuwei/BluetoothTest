@@ -1,4 +1,4 @@
-package com.csw.bluetooth.model.cache
+package com.csw.bluetooth.model.storage
 
 import android.net.Uri
 import com.csw.quickmvp.utils.ExternalFileHelper

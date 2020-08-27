@@ -9,6 +9,8 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.DecelerateInterpolator
+import android.view.inputmethod.InputMethodManager
 import android.widget.RelativeLayout
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -62,13 +64,7 @@ class ChatInputView @JvmOverloads constructor(
     }
 
     override fun initAdapter() {
-        extrasFunction?.setOnClickListener {
-            if (extrasFunctionPanel?.height ?: 0 == 0) {
-                openFunctionPanel()
-            } else {
-                closeFunctionPanel()
-            }
-        }
+
         myViewPagerAdapter = MyViewPagerAdapter(functionList).apply {
             viewPager?.adapter = this
         }
@@ -81,25 +77,34 @@ class ChatInputView @JvmOverloads constructor(
         }
     private val extrasFunctionPanelUpdateListener = ValueAnimator.AnimatorUpdateListener {
         if (it == extrasFunctionPanelAnimator) {
-            extrasFunctionPanel?.run {
-                it.animatedValue?.let { v ->
-                    if (v is Int) {
-                        layoutParams.height = v
-                        requestLayout()
-                    }
+            it.animatedValue?.let { v ->
+                if (v is Int) {
+                    changeExtrasFunctionPanelHeight(v)
                 }
             }
         }
     }
 
-    private fun openFunctionPanel() {
+    private fun changeExtrasFunctionPanelHeight(height: Int) {
+        extrasFunctionPanel?.run {
+            layoutParams.height = height
+            requestLayout()
+        }
+    }
 
+    private fun openFunctionPanel() {
+        //关闭输入法
+        context.getSystemService(InputMethodManager::class.java)?.hideSoftInputFromWindow(
+            windowToken,
+            InputMethodManager.HIDE_NOT_ALWAYS
+        )
         //执行动画，展开额外功能面板
         extrasFunctionPanel?.run {
             viewPager?.layoutParams?.height?.let { displayHeight ->
                 extrasFunctionPanelAnimator = ObjectAnimator.ofInt(height, displayHeight).apply {
                     addUpdateListener(extrasFunctionPanelUpdateListener)
-                    duration = 300
+                    duration = 200
+                    interpolator = DecelerateInterpolator()
                     start()
                 }
             }
@@ -110,13 +115,33 @@ class ChatInputView @JvmOverloads constructor(
         extrasFunctionPanel?.run {
             extrasFunctionPanelAnimator = ObjectAnimator.ofInt(height, 0).apply {
                 addUpdateListener(extrasFunctionPanelUpdateListener)
-                duration = 300
+                duration = 200
+                interpolator = DecelerateInterpolator()
                 start()
             }
         }
     }
 
     override fun initListener() {
+        extrasFunction?.setOnClickListener {
+            if (extrasFunctionPanel?.height ?: 0 == 0) {
+                openFunctionPanel()
+            } else {
+                closeFunctionPanel()
+            }
+        }
+        msg.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                //输入法弹出
+                changeExtrasFunctionPanelHeight(0)
+//                closeFunctionPanel()
+            }
+        }
+        msg?.setOnClickListener {
+            //输入法弹出
+            changeExtrasFunctionPanelHeight(0)
+//            closeFunctionPanel()
+        }
     }
 
     override fun initData() {

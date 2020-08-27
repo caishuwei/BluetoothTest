@@ -3,9 +3,7 @@ package com.csw.bluetooth.app
 import android.app.Application
 import com.csw.bluetooth.database.MyRoomDatabase
 import com.csw.bluetooth.model.DataModel
-import com.csw.bluetooth.model.cache.ExternalFileDataCache
 import com.csw.quickmvp.SDK
-import com.csw.quickmvp.utils.LogUtils
 import javax.inject.Inject
 import javax.inject.Named
 
