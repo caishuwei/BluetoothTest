@@ -181,19 +181,7 @@ class ChatActivity : BaseMVPActivity<ChatContract.Presenter>(), ChatContract.Vie
     }
 
     override fun updateMessageList(messageItemList: List<MessageItem>) {
-        var scrollToEnd = false
-        recyclerView?.layoutManager?.run {
-            if (this is LinearLayoutManager) {
-                val lastCompletelyVisibleItem = findLastCompletelyVisibleItemPosition()
-                if (itemCount == 0) {
-                    //没有item
-                    scrollToEnd = true
-                } else if (lastCompletelyVisibleItem == itemCount - 1) {
-                    //最后一个Item完全可见
-                    scrollToEnd = true
-                }
-            }
-        }
+        var scrollToEnd = recyclerView?.inListEnd() ?: false
         messageList.clear()
         messageList.addAll(messageItemList)
         chatAdapter?.notifyDataSetChanged()
