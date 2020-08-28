@@ -3,7 +3,7 @@ package com.csw.bluetooth.ui.chat
 import android.bluetooth.BluetoothDevice
 import android.content.*
 import android.os.IBinder
-import com.csw.bluetooth.IClassicBluetoothInterface
+import com.csw.bluetooth.ClassicBluetoothInterface
 import com.csw.bluetooth.database.DBUtils
 import com.csw.bluetooth.database.values.MessageState
 import com.csw.bluetooth.entities.MessageItem
@@ -204,13 +204,13 @@ class ChatPresenter @Inject constructor(
 
     //inner class-----------------------------------------------------------------------------------
     private inner class ClassicBluetoothServiceConnection : ServiceConnection {
-        var iClassicBluetoothInterface: IClassicBluetoothInterface? = null
+        var iClassicBluetoothInterface: ClassicBluetoothInterface? = null
         override fun onServiceDisconnected(name: ComponentName?) {
             iClassicBluetoothInterface = null
         }
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            iClassicBluetoothInterface = IClassicBluetoothInterface.Stub.asInterface(service)
+            iClassicBluetoothInterface = ClassicBluetoothInterface.Stub.asInterface(service)
             if (uiIsCreated) {
                 syncConnectState()
             }

@@ -5,7 +5,7 @@ import android.bluetooth.BluetoothDevice
 import android.content.*
 import android.os.IBinder
 import com.chad.library.adapter.base.entity.MultiItemEntity
-import com.csw.bluetooth.IClassicBluetoothInterface
+import com.csw.bluetooth.ClassicBluetoothInterface
 import com.csw.bluetooth.R
 import com.csw.bluetooth.entities.BluetoothDeviceWrap
 import com.csw.bluetooth.entities.DevicesGroup
@@ -128,13 +128,13 @@ class ScanDevicePresenter @Inject constructor(
 
     //inner class-----------------------------------------------------------------------------------
     private inner class ClassicBluetoothServiceConnection : ServiceConnection {
-        var iClassicBluetoothInterface: IClassicBluetoothInterface? = null
+        var iClassicBluetoothInterface: ClassicBluetoothInterface? = null
         override fun onServiceDisconnected(name: ComponentName?) {
             iClassicBluetoothInterface = null
         }
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            iClassicBluetoothInterface = IClassicBluetoothInterface.Stub.asInterface(service)
+            iClassicBluetoothInterface = ClassicBluetoothInterface.Stub.asInterface(service)
             if (uiIsCreated) {
                 iClassicBluetoothInterface?.bluetoothDevices?.let {
                     bluetoothDevices.clear()

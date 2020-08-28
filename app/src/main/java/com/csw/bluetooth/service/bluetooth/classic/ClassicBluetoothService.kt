@@ -12,7 +12,7 @@ import android.content.IntentFilter
 import android.net.Uri
 import android.os.IBinder
 import androidx.core.content.ContextCompat
-import com.csw.bluetooth.IClassicBluetoothInterface
+import com.csw.bluetooth.ClassicBluetoothInterface
 import com.csw.bluetooth.app.MyApplication
 import com.csw.bluetooth.database.DBUtils
 import com.csw.bluetooth.service.bluetooth.ConnectState
@@ -295,7 +295,7 @@ class ClassicBluetoothService : Service() {
     }
 
     //inner class-----------------------------------------------------------------------------------
-    private inner class MyClassicBluetoothImpl : IClassicBluetoothInterface.Stub() {
+    private inner class MyClassicBluetoothImpl : ClassicBluetoothInterface.Stub() {
 
         override fun cancelDiscovery() {
             bluetoothAdapter?.cancelDiscovery()

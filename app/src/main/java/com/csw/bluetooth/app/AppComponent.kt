@@ -5,6 +5,7 @@ import android.content.Context
 import com.csw.bluetooth.database.MyRoomDatabase
 import com.csw.bluetooth.model.DataModel
 import com.csw.bluetooth.service.bluetooth.classic.ClassicBluetoothService
+import com.csw.bluetooth.service.bluetooth.le.LowEnergyBluetoothService
 import com.csw.bluetooth.ui.chat.ChatComponent
 import com.csw.bluetooth.ui.scan.ScanDeviceComponent
 import com.csw.quickmvp.mvp.base.AppSingleton
@@ -20,6 +21,7 @@ interface AppComponent {
 
     fun inject(myApplication: MyApplication)
     fun inject(myApplication: ClassicBluetoothService)
+    fun inject(lowEnergyBluetoothService: LowEnergyBluetoothService)
 
     fun getScanDeviceComponentBuilder(): ScanDeviceComponent.Builder
     fun getChatComponentBuilder(): ChatComponent.Builder

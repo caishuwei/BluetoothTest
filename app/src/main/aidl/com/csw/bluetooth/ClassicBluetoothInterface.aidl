@@ -1,7 +1,7 @@
-// IClassicBluetoothInterface.aidl
+// ClassicBluetoothInterface.aidl
 package com.csw.bluetooth;
 import android.bluetooth.BluetoothDevice;
-interface IClassicBluetoothInterface {
+interface ClassicBluetoothInterface {
     /**
      * 开始扫描周围蓝牙设备
      */
