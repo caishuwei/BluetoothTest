@@ -1,6 +1,7 @@
 package com.csw.bluetooth.service.bluetooth.le
 
 import android.app.Service
+import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.content.Intent
 import android.os.IBinder
@@ -38,7 +39,6 @@ class LowEnergyBluetoothService : Service() {
                     }
             )
         }
-
     }
 
     @Inject
@@ -56,6 +56,19 @@ class LowEnergyBluetoothService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        intent?.action.let {
+            when (it) {
+                ACTION_BEGIN_DISCOVERY -> {
+                    lowEnergyBluetoothInterfaceImpl.startDiscovery()
+                }
+                ACTION_CANCEL_DISCOVERY -> {
+                    lowEnergyBluetoothInterfaceImpl.cancelDiscovery()
+                }
+                ACTION_WAIT_FOR_CLIENT_CONTENT -> {
+//                    startServerConnectTask()
+                }
+            }
+        }
         return super.onStartCommand(intent, flags, startId)
     }
 
@@ -72,5 +85,14 @@ class LowEnergyBluetoothService : Service() {
 
     private inner class LowEnergyBluetoothInterfaceImpl : LowEnergyBluetoothInterface.Stub() {
 
+        override fun startDiscovery() {
+        }
+
+        override fun cancelDiscovery() {
+        }
+
+        override fun getBluetoothDevices(): Array<BluetoothDevice> {
+            return emptyArray()
+        }
     }
 }
